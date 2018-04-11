@@ -5,20 +5,11 @@
 
 
 var confirmArray = function(list) {
-  if (!list || !list.length || !Array.isArray(list)) {
-    throw new TypeError("Argument is not of type Array.");
+  if (Array.isArray(list)) {
+    return list;
   }
 
-  return list;
-}
-
-
-var confirmNumber = function(number) {
-  if (Number.isNumber(number)) {
-    return number;
-  }
-
-  throw new TypeError("Argument is not of type Number.");
+  throw new TypeError("Argument is not of type Array.");
 }
 
 
@@ -42,7 +33,8 @@ var confirmFunction = function(func) {
 
 // - iterators -
 
-var iterator = function(list) {
+var iterator = function(arr) {
+  var list = confirmArray(arr);
   var index = -1;
   var complete = false;
 
@@ -66,7 +58,8 @@ var iterator = function(list) {
 };
 
 
-var reverseIterator = function(list) {
+var reverseIterator = function(arr) {
+  var list = confirmArray(arr);
   var index = list.length;
   var complete = false;
 
@@ -102,30 +95,33 @@ var times = function(num, func) {
 
 // - functors -
 
-var each = function(list, func, initial) {
+var each = function(list, func) {
   var listIter = iterator(list);
+  var fn = confirmFunction(func);
 
   while (!listIter.done()) {
-    func(listIter.step());
+    fn(listIter.step());
   }
 };
 
 
-var eachRight = function(list, func, initial) {
+var eachRight = function(list, func) {
   var listIter = reverseIterator(list);
+  var fn = confirmFunction(func);
 
   while (!listIter.done()) {
-    func(listIter.step());
+    fn(listIter.step());
   }
 }
 
 
 var enumerate = function(list, func, initial) {
   var listIter = iterator(list);
+  var fn = confirmFunction(func);
   var index = (initial || 0);
 
   while (!listIter.done()) {
-    func(index++, listIter.step());
+    fn(index++, listIter.step());
   }
 };
 
@@ -143,10 +139,11 @@ var map = function(list, func) {
 
 var reduce = function(list, func, initial) {
   var listIter = iterator(list);
+  var fn = confirmFunction(func);
   var accumulator = (initial || listIter.step());
 
   while (!listIter.done()) {
-    accumulator = func(accumulator, listIter.step());
+    accumulator = fn(accumulator, listIter.step());
   }
 
   return accumulator;
@@ -155,10 +152,11 @@ var reduce = function(list, func, initial) {
 
 var reduceRight = function(list, func, initial) {
   var listIter = reverseIterator(list);
+  var fn = confirmFunction(func);
   var accumulator = (initial || listIter.step());
 
   while (!listIter.done()) {
-    accumulator = func(accumulator, listIter.step());
+    accumulator = fn(accumulator, listIter.step());
   }
 
   return accumulator;
@@ -168,10 +166,11 @@ var reduceRight = function(list, func, initial) {
 // - selectors -
 
 var filter = function(list, func) {
+  var fn = confirmFunction(func);
   var filtered = [];
 
   each(list, function(item) {
-    if (func(item)) {
+    if (fn(item)) {
       filtered.push(item);
     }
   });
@@ -181,10 +180,11 @@ var filter = function(list, func) {
 
 
 var reject = function(list, func) {
+  var fn = confirmFunction(func);
   var rejected = [];
 
   each(list, function(item) {
-    if (!func(item)) {
+    if (!fn(item)) {
       rejected.push(item);
     }
   });
@@ -196,10 +196,11 @@ var reject = function(list, func) {
 // - qualitators -
 
 var all = function(list, func) {
+  var fn = confirmFunction(func);
   var bool = true;
 
   each(list, function(item) {
-    if (!func(item)) {
+    if (!fn(item)) {
       bool = false;
       return;
     }
@@ -210,10 +211,11 @@ var all = function(list, func) {
 
 
 var any = function(list, func) {
+  var fn = confirmFunction(func);
   var bool = false;
 
   each(list, function(item) {
-    if (func(item)) {
+    if (fn(item)) {
       bool = true;
       return;
     }
@@ -224,6 +226,7 @@ var any = function(list, func) {
 
 
 var none = function(list, func) {
+  var fn = confirmFunction(fn);
   var bool = true;
 
   each(list, function(item) {
@@ -331,17 +334,22 @@ var range = function() {
   var end = arguments[0];
   var skip = 1;
 
-  if (arguments.length > 1) {
-    start = arguments[0];
-    end = arguments[1];
-  }
+  switch (arguments.length) {
+    case 0:
+      return [];
+      break;
+    case 2:
+      start = arguments[0];
+      end = arguments[1];
+      break;
+    case 3:
+      skip = arguments[2];
 
-  if (arguments.length > 2) {
-    skip = arguments[2];
+      if (skip === 0) {
+        return run;
+      }
 
-    if (skip === 0) {
-      return run;
-    }
+      break;
   }
 
   if (start < end) {

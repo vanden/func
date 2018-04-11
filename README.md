@@ -1,6 +1,6 @@
 # Func.js
 
-*Func.js* is a little JavaScript Swiss-Army knife providing expected, missing, or less-cumbersome functions.
+*Func.js* is a little JavaScript Swiss-Army knife providing expected, missing, or less-cumbersome helper functions.
 
 ## Details
 
