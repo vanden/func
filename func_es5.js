@@ -33,10 +33,10 @@ var confirmFunction = function(func) {
 
 // - iterators -
 
-const iterator = function(arr) {
+var iterator = function(arr) {
   var list = confirmArray(arr);
   var index = -1;
-  var complete = (arr.length === 0 ? true : false);
+  var complete = false;
 
   return Object.freeze({
     done: function() {
@@ -481,9 +481,4 @@ var after = function(times, func) {
   }
 
   return afterd;
-}
-
-
-export {
-  iterator
 }

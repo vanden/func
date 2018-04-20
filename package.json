@@ -1,0 +1,30 @@
+{
+  "name": "func",
+  "version": "1.0.0",
+  "description": "Func provides less-cumbersome expected or missing helper functions.",
+  "main": "func.js",
+  "devDependencies": {
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "mocha": "^5.1.1"
+  },
+  "scripts": {
+    "test": "mocha tests/*.js --require babel-register || exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taylor-vann/func.git"
+  },
+  "keywords": [
+    "functional",
+    "programming",
+    "utility"
+  ],
+  "author": "Brian Taylor Vann",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/taylor-vann/func/issues"
+  },
+  "homepage": "https://github.com/taylor-vann/func#readme"
+}
