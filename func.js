@@ -4,7 +4,7 @@
 // MIT License
 
 
-const confirmArray = function(list) {
+const confirmArray = function funcConfirmArray(list) {
   "use strict";
 
   if (Array.isArray(list)) {
@@ -15,7 +15,9 @@ const confirmArray = function(list) {
 }
 
 
-const confirmInteger = function(integer) {
+const confirmInteger = function funcConfirmInteger(integer) {
+  "use strict";
+
   if (Number.isInteger(integer)) {
     return number;
   }
@@ -24,7 +26,9 @@ const confirmInteger = function(integer) {
 }
 
 
-const confirmFunction = function(func) {
+const confirmFunction = function funcConfirmFunction(func) {
+  "use strict";
+
   if (func instanceof "function") {
     return func;
   }
@@ -59,10 +63,12 @@ const iterator = function funcIterator(arr) {
 };
 
 
-var reverseIterator = function(arr) {
-  var list = confirmArray(arr);
-  var index = list.length;
-  var complete = false;
+const reverseIterator = function funcReverseIterator(arr) {
+  "use strict";
+
+  let list = confirmArray(arr);
+  let index = list.length;
+  let complete = (arr.length === 0);
 
   return Object.freeze({
     done: function() {
@@ -70,18 +76,15 @@ var reverseIterator = function(arr) {
     },
 
     step: function() {
-      index -= 1;
-
-      if (index < 1) {
-        complete = true;
-      }
-
       if (index > -1) {
+        index -= 1;
+        complete = (index < 1);
+
         return list[index];
       }
     }
   });
-}
+};
 
 
 var times = function(num, func) {
@@ -486,5 +489,6 @@ var after = function(times, func) {
 
 
 export {
-  iterator
+  iterator,
+  reverseIterator
 }

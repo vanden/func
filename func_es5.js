@@ -4,7 +4,7 @@
 // MIT License
 
 
-var confirmArray = function (list) {
+var confirmArray = function funcConfirmArray(list) {
     "use strict";
 
     if (Array.isArray(list)) {
@@ -13,6 +13,7 @@ var confirmArray = function (list) {
 
     throw new TypeError("Argument is not of type Array.");
 };
+
 
 var confirmInteger = function(integer) {
   if (Number.isInteger(integer)) {
@@ -58,29 +59,28 @@ var iterator = function funcIterator(arr) {
 };
 
 
-var reverseIterator = function(arr) {
-  var list = confirmArray(arr);
-  var index = list.length;
-  var complete = false;
+var reverseIterator = function funcReverseIterator(arr) {
+    "use strict";
+    
+    var list = confirmArray(arr);
+    var index = list.length;
+    var complete = (arr.length === 0);
 
-  return Object.freeze({
-    done: function() {
-      return complete;
-    },
+    return Object.freeze({
+        done: function() {
+            return complete;
+          },
 
-    step: function() {
-      index -= 1;
+          step: function() {
+              if (index > -1) {
+                index -= 1;
+                complete = (index < 1);
 
-      if (index < 1) {
-        complete = true;
-      }
-
-      if (index > -1) {
-        return list[index];
-      }
-    }
-  });
-}
+                return list[index];
+              }
+          }
+    });
+};
 
 
 var times = function(num, func) {
