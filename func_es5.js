@@ -61,7 +61,7 @@ var iterator = function funcIterator(arr) {
 
 var reverseIterator = function funcReverseIterator(arr) {
     "use strict";
-    
+
     var list = confirmArray(arr);
     var index = list.length;
     var complete = (arr.length === 0);
@@ -83,11 +83,12 @@ var reverseIterator = function funcReverseIterator(arr) {
 };
 
 
-var times = function(num, func) {
-  var freq = num < 0 ? 0 : num;
+var times = function funcTimes(num, func) {
+  var freq = Math.max(0, confirmNumber(num));
+  var fn = confirmFunction(func);
 
   while (freq > 0) {
-    func();
+    fn();
     freq -= 1;
   }
 }

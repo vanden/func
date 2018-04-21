@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { iterator } from "../func/iterator.js";
+import { iterator } from "../func.js";
 
 
 describe("Test the behavior of iterator()", function () {

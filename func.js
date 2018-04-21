@@ -19,7 +19,7 @@ const confirmInteger = function funcConfirmInteger(integer) {
   "use strict";
 
   if (Number.isInteger(integer)) {
-    return number;
+    return integer;
   }
 
   throw new TypeError("Argument is not of type Integer.");
@@ -29,7 +29,7 @@ const confirmInteger = function funcConfirmInteger(integer) {
 const confirmFunction = function funcConfirmFunction(func) {
   "use strict";
 
-  if (func instanceof "function") {
+  if (func instanceof Function) {
     return func;
   }
 
@@ -87,11 +87,12 @@ const reverseIterator = function funcReverseIterator(arr) {
 };
 
 
-var times = function(num, func) {
-  var freq = num < 0 ? 0 : num;
+const times = function funcTimes(num, func) {
+  let freq = Math.max(0, confirmInteger(num));
+  let fn = confirmFunction(func);
 
   while (freq > 0) {
-    func();
+    fn();
     freq -= 1;
   }
 }
@@ -490,5 +491,6 @@ var after = function(times, func) {
 
 export {
   iterator,
-  reverseIterator
+  reverseIterator,
+  times
 }
