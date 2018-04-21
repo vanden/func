@@ -88,6 +88,8 @@ const reverseIterator = function funcReverseIterator(arr) {
 
 
 const times = function funcTimes(num, func) {
+  "use strict";
+
   let freq = Math.max(0, confirmInteger(num));
   let fn = confirmFunction(func);
 
@@ -100,9 +102,11 @@ const times = function funcTimes(num, func) {
 
 // - functors -
 
-var each = function(list, func) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
+const each = function funcEach(list, func) {
+  "use strict";
+
+  let listIter = iterator(list);
+  let fn = confirmFunction(func);
 
   while (!listIter.done()) {
     fn(listIter.step());
@@ -110,9 +114,11 @@ var each = function(list, func) {
 };
 
 
-var eachRight = function(list, func) {
-  var listIter = reverseIterator(list);
-  var fn = confirmFunction(func);
+var reverseEach = function funcReverseEach(list, func) {
+  "use strict";
+
+  let listIter = reverseIterator(list);
+  let fn = confirmFunction(func);
 
   while (!listIter.done()) {
     fn(listIter.step());
@@ -492,5 +498,7 @@ var after = function(times, func) {
 export {
   iterator,
   reverseIterator,
-  times
+  times,
+  each,
+  reverseEach
 }

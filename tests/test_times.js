@@ -3,7 +3,7 @@ import { times } from "../func.js";
 
 
 describe("Test the behavior of times()", function () {
-  describe("The default instantiation of 'times' should ...", function() {
+  describe("The default calls to 'times' should ...", function() {
     it("throw an error if a number is not given", function() {
       expect(function() {
         times(undefined, function() {})

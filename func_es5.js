@@ -84,35 +84,41 @@ var reverseIterator = function funcReverseIterator(arr) {
 
 
 var times = function funcTimes(num, func) {
-  var freq = Math.max(0, confirmNumber(num));
-  var fn = confirmFunction(func);
+    "use strict";
 
-  while (freq > 0) {
-    fn();
-    freq -= 1;
-  }
+    var freq = Math.max(0, confirmNumber(num));
+    var fn = confirmFunction(func);
+
+    while (freq > 0) {
+        fn();
+        freq -= 1;
+    }
 }
 
 
 // - functors -
 
-var each = function(list, func) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
+var each = function funcEach(list, func) {
+    "use strict";
 
-  while (!listIter.done()) {
-    fn(listIter.step());
-  }
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+
+    while (!listIter.done()) {
+        fn(listIter.step());
+    }
 };
 
 
-var eachRight = function(list, func) {
-  var listIter = reverseIterator(list);
-  var fn = confirmFunction(func);
+var reverseEach = function funcReverseEach(list, func) {
+    "use strict";
 
-  while (!listIter.done()) {
-    fn(listIter.step());
-  }
+    var listIter = reverseIterator(list);
+    var fn = confirmFunction(func);
+
+    while (!listIter.done()) {
+        fn(listIter.step());
+    }
 }
 
 
