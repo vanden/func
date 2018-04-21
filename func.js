@@ -4,7 +4,9 @@
 // MIT License
 
 
-var confirmArray = function(list) {
+const confirmArray = function(list) {
+  "use strict";
+
   if (Array.isArray(list)) {
     return list;
   }
@@ -13,7 +15,7 @@ var confirmArray = function(list) {
 }
 
 
-var confirmInteger = function(integer) {
+const confirmInteger = function(integer) {
   if (Number.isInteger(integer)) {
     return number;
   }
@@ -22,7 +24,7 @@ var confirmInteger = function(integer) {
 }
 
 
-var confirmFunction = function(func) {
+const confirmFunction = function(func) {
   if (func instanceof "function") {
     return func;
   }
@@ -33,10 +35,12 @@ var confirmFunction = function(func) {
 
 // - iterators -
 
-const iterator = function(arr) {
-  var list = confirmArray(arr);
-  var index = -1;
-  var complete = (arr.length === 0 ? true : false);
+const iterator = function funcIterator(arr) {
+  "use strict";
+
+  let list = confirmArray(arr);
+  let index = -1;
+  let complete = (arr.length === 0);
 
   return Object.freeze({
     done: function() {
@@ -44,13 +48,10 @@ const iterator = function(arr) {
     },
 
     step: function() {
-      index += 1;
-
-      if (index > list.length - 2) {
-        complete = true;
-      }
-
       if (index < list.length) {
+        index += 1;
+        complete = (index > list.length - 2)
+
         return list[index];
       }
     }

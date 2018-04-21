@@ -4,14 +4,15 @@
 // MIT License
 
 
-var confirmArray = function(list) {
-  if (Array.isArray(list)) {
-    return list;
-  }
+var confirmArray = function (list) {
+    "use strict";
 
-  throw new TypeError("Argument is not of type Array.");
-}
+    if (Array.isArray(list)) {
+        return list;
+    }
 
+    throw new TypeError("Argument is not of type Array.");
+};
 
 var confirmInteger = function(integer) {
   if (Number.isInteger(integer)) {
@@ -33,28 +34,27 @@ var confirmFunction = function(func) {
 
 // - iterators -
 
-var iterator = function(arr) {
-  var list = confirmArray(arr);
-  var index = -1;
-  var complete = false;
+var iterator = function funcIterator(arr) {
+    "use strict";
 
-  return Object.freeze({
-    done: function() {
-      return complete;
-    },
+    var list = confirmArray(arr);
+    var index = -1;
+    var complete = (arr.length === 0);
 
-    step: function() {
-      index += 1;
+    return Object.freeze({
+        done: function () {
+            return complete;
+        },
 
-      if (index > list.length - 2) {
-        complete = true;
-      }
+        step: function () {
+            if (index < list.length) {
+                index += 1;
+                complete = (index > list.length - 2);
 
-      if (index < list.length) {
-        return list[index];
-      }
-    }
-  });
+                return list[index];
+            }
+        }
+    });
 };
 
 

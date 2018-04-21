@@ -44,6 +44,13 @@ describe("Test the behavior of iterator()", function () {
 
       expect(iter.done()).to.be.true
     })
+
+    it("return true after last step but shorter", function() {
+      var iter = iterator([1]);
+      iter.step();
+
+      expect(iter.done()).to.be.true
+    })
   })
 
   describe("The behavior of 'iterator.step()' method should ...", function() {
