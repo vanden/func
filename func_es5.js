@@ -4,18 +4,17 @@
 // MIT License
 
 
-const confirmArray = function(list) {
-  "use strict";
+var confirmArray = function (list) {
+    "use strict";
 
-  if (Array.isArray(list)) {
-    return list;
-  }
+    if (Array.isArray(list)) {
+        return list;
+    }
 
-  throw new TypeError("Argument is not of type Array.");
-}
+    throw new TypeError("Argument is not of type Array.");
+};
 
-
-const confirmInteger = function(integer) {
+var confirmInteger = function(integer) {
   if (Number.isInteger(integer)) {
     return number;
   }
@@ -24,7 +23,7 @@ const confirmInteger = function(integer) {
 }
 
 
-const confirmFunction = function(func) {
+var confirmFunction = function(func) {
   if (func instanceof "function") {
     return func;
   }
@@ -35,27 +34,27 @@ const confirmFunction = function(func) {
 
 // - iterators -
 
-const iterator = function funcIterator(arr) {
-  "use strict";
+var iterator = function funcIterator(arr) {
+    "use strict";
 
-  let list = confirmArray(arr);
-  let index = -1;
-  let complete = (arr.length === 0);
+    var list = confirmArray(arr);
+    var index = -1;
+    var complete = (arr.length === 0);
 
-  return Object.freeze({
-    done: function() {
-      return complete;
-    },
+    return Object.freeze({
+        done: function () {
+            return complete;
+        },
 
-    step: function() {
-      if (index < list.length) {
-        index += 1;
-        complete = (index > list.length - 2)
+        step: function () {
+            if (index < list.length) {
+                index += 1;
+                complete = (index > list.length - 2);
 
-        return list[index];
-      }
-    }
-  });
+                return list[index];
+            }
+        }
+    });
 };
 
 
@@ -482,9 +481,4 @@ var after = function(times, func) {
   }
 
   return afterd;
-}
-
-
-export {
-  iterator
 }
