@@ -123,24 +123,36 @@ var reverseEach = function funcReverseEach(list, func) {
 
 
 var enumerate = function(list, func, initial) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
-  var index = (initial || 0);
+    "use strict";
 
-  while (!listIter.done()) {
-    fn(index++, listIter.step());
-  }
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+    var index = 0;
+
+    if(initial) {
+        index = confirmInteger(initial);
+    }
+
+    while (!listIter.done()) {
+        fn(index, listIter.step());
+        index += 1;
+    }
 };
 
 
-var map = function(list, func) {
-  var mapList = [];
+var map = function(arr, func) {
+    "use strict";
 
-  each(list, function(item, index) {
-    mapList.push(func(item, index));
-  });
+    var list = confirmArray(arr);
+    var fn = confirmFunction(func);
 
-  return mapList;
+    var mapList = list.slice();
+
+    enumerate(list, function(index, item) {
+        mapList[index] = func(item);
+    });
+
+    return mapList;
 };
 
 

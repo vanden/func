@@ -10,7 +10,8 @@
     "mocha": "^5.1.1"
   },
   "scripts": {
-    "test": "mocha tests/*.js --require babel-register || exit 0"
+    "test": "mocha tests/*.js --require babel-register || exit 0",
+    "test-single": "mocha tests/test_reduce.js --require babel-register || exit 0"
   },
   "repository": {
     "type": "git",

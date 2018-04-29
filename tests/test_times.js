@@ -23,7 +23,7 @@ describe("Test the behavior of times()", function () {
     })
   })
 
-  describe("The default behavior of thimes() should ...", function() {
+  describe("The default behavior of times() should ...", function() {
     it("doesn't execute when given a negative number", function() {
       var tick = 0;
       times(-1, function() {
