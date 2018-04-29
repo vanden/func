@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "mocha tests/*.js --require babel-register || exit 0",
-    "test-single": "mocha tests/test_none.js --require babel-register || exit 0"
+    "test-single": "mocha tests/test_count.js --require babel-register || exit 0"
   },
   "repository": {
     "type": "git",

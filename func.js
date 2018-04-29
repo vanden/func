@@ -241,7 +241,7 @@ const all = function(list, func) {
   let fn = confirmFunction(func);
 
   while (!listIter.done()) {
-    if (!!(fn(listIter.step())) === true) {
+    if (!(fn(listIter.step()) === true)) {
       return false;
     }
   }
@@ -282,8 +282,10 @@ const none = function(list, func) {
 };
 
 
-var count = function(list, func) {
-  var tally = 0;
+const count = function(list, func) {
+  let tally = 0;
+
+  let fn = confirmFunction(func);
 
   each(list, function(item) {
     if (func(item) === true) {
@@ -562,5 +564,6 @@ export {
   reject,
   all,
   any,
-  none
+  none,
+  count
 }

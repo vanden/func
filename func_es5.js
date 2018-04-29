@@ -261,26 +261,27 @@ var any = function(list, func) {
 
 
 var none = function(list, func) {
-  "use strict";
+    "use strict";
 
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
 
-  while (!listIter.done()) {
-    if (!!(fn(listIter.step())) === true) {
-      return false;
+    while (!listIter.done()) {
+        if (!!(fn(listIter.step())) === true) {
+            return false;
+        }
     }
-  }
 
-  return true;
+    return true;
 };
 
 
 var count = function(list, func) {
+  var fn = confirmFunction(func);
   var tally = 0;
 
   each(list, function(item) {
-    if (func(item)) {
+    if (func(item) === true) {
       tally += 1;
     }
   });

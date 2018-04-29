@@ -67,7 +67,7 @@ describe("Test the behavior of all()", function () {
 
     it("not allow truthy passes", function() {
       var expected = false;
-      var start = ["dude", "hello", "truest"];
+      var start = ["1", [1], 1];
 
       var result = all(start, function(value) {
         return value;
