@@ -39,6 +39,15 @@ describe("Test the behavior of enumerate()", function () {
       expect(tick).to.be.equal(0);
     })
 
+    it("executes the correct number of times", function() {
+      var tick = 0;
+      enumerate([1, 2, 3], function() {
+        tick += 1;
+      })
+
+      expect(tick).to.be.equal(3);
+    })
+
     it("enumerates through all given values", function() {
       var expected = [1, 2, 3];
       var result = [];

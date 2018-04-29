@@ -181,10 +181,16 @@ const reduce = function(list, func, initial) {
 };
 
 
-var reduceRight = function(list, func, initial) {
-  var listIter = reverseIterator(list);
-  var fn = confirmFunction(func);
-  var accumulator = (initial || listIter.step());
+const reverseReduce = function(list, func, initial) {
+  "use strict";
+
+  let listIter = reverseIterator(list);
+  let fn = confirmFunction(func);
+  let accumulator = initial;
+
+  if(typeof accumulator === "undefined") {
+    accumulator = listIter.step();
+  }
 
   while (!listIter.done()) {
     accumulator = fn(accumulator, listIter.step());
@@ -194,12 +200,14 @@ var reduceRight = function(list, func, initial) {
 };
 
 
-var filter = function(list, func) {
-  var fn = confirmFunction(func);
-  var filtered = [];
+const filter = function(list, func) {
+  "use strict";
+
+  let fn = confirmFunction(func);
+  let filtered = [];
 
   each(list, function(item) {
-    if (fn(item)) {
+    if (fn(item) === true) {
       filtered.push(item);
     }
   });
@@ -208,12 +216,14 @@ var filter = function(list, func) {
 };
 
 
-var reject = function(list, func) {
-  var fn = confirmFunction(func);
-  var rejected = [];
+const reject = function(list, func) {
+  "use strict";
+
+  let fn = confirmFunction(func);
+  let rejected = [];
 
   each(list, function(item) {
-    if (!fn(item)) {
+    if (fn(item) === false) {
       rejected.push(item);
     }
   });
@@ -224,48 +234,51 @@ var reject = function(list, func) {
 
 // - qualitators -
 
-var all = function(list, func) {
-  var fn = confirmFunction(func);
-  var bool = true;
+const all = function(list, func) {
+  "use strict";
 
-  each(list, function(item) {
-    if (!fn(item)) {
-      bool = false;
-      return;
+  let listIter = iterator(list);
+  let fn = confirmFunction(func);
+
+  while (!listIter.done()) {
+    if (!!(fn(listIter.step())) === true) {
+      return false;
     }
-  });
+  }
 
-  return bool;
+  return true;
 };
 
 
-var any = function(list, func) {
-  var fn = confirmFunction(func);
-  var bool = false;
+const any = function(list, func) {
+  "use strict";
 
-  each(list, function(item) {
-    if (fn(item)) {
-      bool = true;
-      return;
+  let listIter = iterator(list);
+  let fn = confirmFunction(func);
+
+  while (!listIter.done()) {
+    if (fn(listIter.step()) === true) {
+      return true;
     }
-  });
+  }
 
-  return bool;
+  return false;
 };
 
 
-var none = function(list, func) {
-  var fn = confirmFunction(fn);
-  var bool = true;
+const none = function(list, func) {
+  "use strict";
 
-  each(list, function(item) {
-    if (func(item)) {
-      bool = false;
-      return;
+  let listIter = iterator(list);
+  let fn = confirmFunction(func);
+
+  while (!listIter.done()) {
+    if (!!(fn(listIter.step())) === true) {
+      return false;
     }
-  });
+  }
 
-  return bool;
+  return true;
 };
 
 
@@ -273,7 +286,7 @@ var count = function(list, func) {
   var tally = 0;
 
   each(list, function(item) {
-    if (func(item)) {
+    if (func(item) === true) {
       tally += 1;
     }
   });
@@ -543,5 +556,11 @@ export {
   reverseEach,
   enumerate,
   map,
-  reduce
+  reduce,
+  reverseReduce,
+  filter,
+  reject,
+  all,
+  any,
+  none
 }

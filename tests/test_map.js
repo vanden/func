@@ -33,6 +33,15 @@ describe("Test the behavior of map()", function () {
       expect(tick).to.be.equal(0);
     })
 
+    it("executes the correct number of times", function() {
+      var tick = 0;
+      map([1, 2, 3], function() {
+        tick += 1;
+      })
+
+      expect(tick).to.be.equal(3);
+    })
+
     it("maps through all given values", function() {
       var expected = [1, 4, 9];
       var start = [1, 2, 3];

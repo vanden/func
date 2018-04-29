@@ -157,103 +157,122 @@ var map = function(arr, func) {
 
 
 var reduce = function(list, func, initial) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
-  var accumulator = (initial || listIter.step());
+    "use strict";
 
-  while (!listIter.done()) {
-    accumulator = fn(accumulator, listIter.step());
-  }
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+    var accumulator = initial;
 
-  return accumulator;
+    if(typeof accumulator === "undefined") {
+        accumulator = listIter.step();
+    }
+
+    while (!listIter.done()) {
+        accumulator = fn(accumulator, listIter.step());
+    }
+
+    return accumulator;
 };
 
 
-var reduceRight = function(list, func, initial) {
-  var listIter = reverseIterator(list);
-  var fn = confirmFunction(func);
-  var accumulator = (initial || listIter.step());
+var reverseReduce = function(list, func, initial) {
+      "use strict";
 
-  while (!listIter.done()) {
-    accumulator = fn(accumulator, listIter.step());
-  }
+      var listIter = reverseIterator(list);
+      var fn = confirmFunction(func);
+      var accumulator = initial;
 
-  return accumulator;
+      if(typeof accumulator === "undefined") {
+          accumulator = listIter.step();
+      }
+
+      while (!listIter.done()) {
+          accumulator = fn(accumulator, listIter.step());
+      }
+
+      return accumulator;
 };
 
 
 var filter = function(list, func) {
-  var fn = confirmFunction(func);
-  var filtered = [];
+    "use strict";
 
-  each(list, function(item) {
-    if (fn(item)) {
-      filtered.push(item);
-    }
-  });
+    var fn = confirmFunction(func);
+    var filtered = [];
 
-  return filtered;
+    each(list, function(item) {
+        if (fn(item)) {
+            filtered.push(item);
+        }
+    });
+
+    return filtered;
 };
 
 
 var reject = function(list, func) {
-  var fn = confirmFunction(func);
-  var rejected = [];
+    "use strict";
 
-  each(list, function(item) {
-    if (!fn(item)) {
-      rejected.push(item);
-    }
-  });
+    var fn = confirmFunction(func);
+    var rejected = [];
 
-  return rejected;
+    each(list, function(item) {
+        if (!fn(item)) {
+            rejected.push(item);
+        }
+    });
+
+    return rejected;
 };
 
 
 // - qualitators -
 
 var all = function(list, func) {
-  var fn = confirmFunction(func);
-  var bool = true;
+    "use strict";
 
-  each(list, function(item) {
-    if (!fn(item)) {
-      bool = false;
-      return;
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+
+    while (!listIter.done()) {
+        if (!(fn(listIter.step()) === true)) {
+            return false;
+        }
     }
-  });
 
-  return bool;
+    return true;
 };
 
 
 var any = function(list, func) {
-  var fn = confirmFunction(func);
-  var bool = false;
+    "use strict";
 
-  each(list, function(item) {
-    if (fn(item)) {
-      bool = true;
-      return;
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+
+    while (!listIter.done()) {
+        if (fn(listIter.step()) === true) {
+            return true;
+        }
     }
-  });
 
-  return bool;
+    return false;
 };
 
 
 var none = function(list, func) {
-  var fn = confirmFunction(fn);
-  var bool = true;
+  "use strict";
 
-  each(list, function(item) {
-    if (func(item)) {
-      bool = false;
-      return;
+  var listIter = iterator(list);
+  var fn = confirmFunction(func);
+
+  while (!listIter.done()) {
+    if (!!(fn(listIter.step())) === true) {
+      return false;
     }
-  });
+  }
 
-  return bool;
+  return true;
 };
 
 

@@ -34,7 +34,16 @@ describe("Test the behavior of each()", function () {
         return testArr;
       }
 
-      expect(testFunc()).to.deep.equal([])
+      expect(testFunc()).to.eql([])
+    })
+
+    it("executes the correct number of times", function() {
+      var tick = 0;
+      each([1, 2, 3], function() {
+        tick += 1;
+      })
+
+      expect(tick).to.be.equal(3);
     })
 
     it("traverse every element of an array", function() {
