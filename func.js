@@ -1,10 +1,12 @@
-// func.js
+// func - javascript utility library
 // Brian Taylor Vann
 // April 2018
 // MIT License
 
 
-const confirmArray = function(list) {
+// - errors -
+
+const confirmArray = function funcConfirmArray(list) {
   "use strict";
 
   if (Array.isArray(list)) {
@@ -15,17 +17,21 @@ const confirmArray = function(list) {
 }
 
 
-const confirmInteger = function(integer) {
+const confirmInteger = function funcConfirmInteger(integer) {
+  "use strict";
+
   if (Number.isInteger(integer)) {
-    return number;
+    return integer;
   }
 
   throw new TypeError("Argument is not of type Integer.");
 }
 
 
-const confirmFunction = function(func) {
-  if (func instanceof "function") {
+const confirmFunction = function funcConfirmFunction(func) {
+  "use strict";
+
+  if (func instanceof Function) {
     return func;
   }
 
@@ -59,10 +65,12 @@ const iterator = function funcIterator(arr) {
 };
 
 
-var reverseIterator = function(arr) {
-  var list = confirmArray(arr);
-  var index = list.length;
-  var complete = false;
+const reverseIterator = function funcReverseIterator(arr) {
+  "use strict";
+
+  let list = confirmArray(arr);
+  let index = list.length;
+  let complete = (arr.length === 0);
 
   return Object.freeze({
     done: function() {
@@ -70,25 +78,25 @@ var reverseIterator = function(arr) {
     },
 
     step: function() {
-      index -= 1;
-
-      if (index < 1) {
-        complete = true;
-      }
-
       if (index > -1) {
+        index -= 1;
+        complete = (index < 1);
+
         return list[index];
       }
     }
   });
-}
+};
 
 
-var times = function(num, func) {
-  var freq = num < 0 ? 0 : num;
+const times = function funcTimes(num, func) {
+  "use strict";
+
+  let freq = Math.max(0, confirmInteger(num));
+  let fn = confirmFunction(func);
 
   while (freq > 0) {
-    func();
+    fn();
     freq -= 1;
   }
 }
@@ -96,9 +104,11 @@ var times = function(num, func) {
 
 // - functors -
 
-var each = function(list, func) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
+const each = function funcEach(arr, func) {
+  "use strict";
+
+  let listIter = iterator(arr);
+  let fn = confirmFunction(func);
 
   while (!listIter.done()) {
     fn(listIter.step());
@@ -106,9 +116,11 @@ var each = function(list, func) {
 };
 
 
-var eachRight = function(list, func) {
-  var listIter = reverseIterator(list);
-  var fn = confirmFunction(func);
+const reverseEach = function funcReverseEach(arr, func) {
+  "use strict";
+
+  let listIter = reverseIterator(arr);
+  let fn = confirmFunction(func);
 
   while (!listIter.done()) {
     fn(listIter.step());
@@ -116,32 +128,50 @@ var eachRight = function(list, func) {
 }
 
 
-var enumerate = function(list, func, initial) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
-  var index = (initial || 0);
+const enumerate = function(arr, func, initial) {
+  "use strict";
+
+  let listIter = iterator(arr);
+  let fn = confirmFunction(func);
+  let index = 0;
+
+  if(initial) {
+    index = confirmInteger(initial);
+  }
 
   while (!listIter.done()) {
-    fn(index++, listIter.step());
+    fn(index, listIter.step());
+    index += 1;
   }
 };
 
 
-var map = function(list, func) {
-  var mapList = [];
+const map = function(arr, func) {
+  "use strict";
 
-  each(list, function(item, index) {
-    mapList.push(func(item, index));
+  let list = confirmArray(arr);
+  let fn = confirmFunction(func);
+
+  let mapList = list.slice();
+
+  enumerate(list, function(index, item) {
+    mapList[index] = func(item);
   });
 
   return mapList;
 };
 
 
-var reduce = function(list, func, initial) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
-  var accumulator = (initial || listIter.step());
+const reduce = function(list, func, initial) {
+  "use strict";
+
+  let listIter = iterator(list);
+  let fn = confirmFunction(func);
+  let accumulator = initial;
+
+  if(typeof accumulator === "undefined") {
+    accumulator = listIter.step();
+  }
 
   while (!listIter.done()) {
     accumulator = fn(accumulator, listIter.step());
@@ -151,10 +181,16 @@ var reduce = function(list, func, initial) {
 };
 
 
-var reduceRight = function(list, func, initial) {
-  var listIter = reverseIterator(list);
-  var fn = confirmFunction(func);
-  var accumulator = (initial || listIter.step());
+const reverseReduce = function(list, func, initial) {
+  "use strict";
+
+  let listIter = reverseIterator(list);
+  let fn = confirmFunction(func);
+  let accumulator = initial;
+
+  if(typeof accumulator === "undefined") {
+    accumulator = listIter.step();
+  }
 
   while (!listIter.done()) {
     accumulator = fn(accumulator, listIter.step());
@@ -164,12 +200,14 @@ var reduceRight = function(list, func, initial) {
 };
 
 
-var filter = function(list, func) {
-  var fn = confirmFunction(func);
-  var filtered = [];
+const filter = function(list, func) {
+  "use strict";
+
+  let fn = confirmFunction(func);
+  let filtered = [];
 
   each(list, function(item) {
-    if (fn(item)) {
+    if (fn(item) === true) {
       filtered.push(item);
     }
   });
@@ -178,12 +216,14 @@ var filter = function(list, func) {
 };
 
 
-var reject = function(list, func) {
-  var fn = confirmFunction(func);
-  var rejected = [];
+const reject = function(list, func) {
+  "use strict";
+
+  let fn = confirmFunction(func);
+  let rejected = [];
 
   each(list, function(item) {
-    if (!fn(item)) {
+    if (fn(item) === false) {
       rejected.push(item);
     }
   });
@@ -194,56 +234,61 @@ var reject = function(list, func) {
 
 // - qualitators -
 
-var all = function(list, func) {
-  var fn = confirmFunction(func);
-  var bool = true;
+const all = function(list, func) {
+  "use strict";
 
-  each(list, function(item) {
-    if (!fn(item)) {
-      bool = false;
-      return;
+  let listIter = iterator(list);
+  let fn = confirmFunction(func);
+
+  while (!listIter.done()) {
+    if (!(fn(listIter.step()) === true)) {
+      return false;
     }
-  });
+  }
 
-  return bool;
+  return true;
 };
 
 
-var any = function(list, func) {
-  var fn = confirmFunction(func);
-  var bool = false;
+const any = function(list, func) {
+  "use strict";
 
-  each(list, function(item) {
-    if (fn(item)) {
-      bool = true;
-      return;
+  let listIter = iterator(list);
+  let fn = confirmFunction(func);
+
+  while (!listIter.done()) {
+    if (fn(listIter.step()) === true) {
+      return true;
     }
-  });
+  }
 
-  return bool;
+  return false;
 };
 
 
-var none = function(list, func) {
-  var fn = confirmFunction(fn);
-  var bool = true;
+const none = function(list, func) {
+  "use strict";
 
-  each(list, function(item) {
-    if (func(item)) {
-      bool = false;
-      return;
+  let listIter = iterator(list);
+  let fn = confirmFunction(func);
+
+  while (!listIter.done()) {
+    if (!!(fn(listIter.step())) === true) {
+      return false;
     }
-  });
+  }
 
-  return bool;
+  return true;
 };
 
 
-var count = function(list, func) {
-  var tally = 0;
+const count = function(list, func) {
+  let tally = 0;
+
+  let fn = confirmFunction(func);
 
   each(list, function(item) {
-    if (func(item)) {
+    if (func(item) === true) {
       tally += 1;
     }
   });
@@ -485,6 +530,40 @@ var after = function(times, func) {
 }
 
 
+var freeze = function(obj) {
+  if (Array.isArray(obj)) {
+    obj.forEach(function(value) {
+      if (typeof value === "object") {
+        freeze(value);
+      }
+    });
+    Object.freeze(obj);
+  } else if (typeof obj === "object") {
+    Object.keys(obj).forEach(function(key) {
+      if (typeof obj[key] === "object") {
+        freeze(obj[key]);
+      }
+    });
+    Object.freeze(obj);
+  }
+}
+
+
+
 export {
-  iterator
+  iterator,
+  reverseIterator,
+  times,
+  each,
+  reverseEach,
+  enumerate,
+  map,
+  reduce,
+  reverseReduce,
+  filter,
+  reject,
+  all,
+  any,
+  none,
+  count
 }

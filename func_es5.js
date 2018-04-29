@@ -4,7 +4,7 @@
 // MIT License
 
 
-var confirmArray = function (list) {
+var confirmArray = function funcConfirmArray(list) {
     "use strict";
 
     if (Array.isArray(list)) {
@@ -13,6 +13,7 @@ var confirmArray = function (list) {
 
     throw new TypeError("Argument is not of type Array.");
 };
+
 
 var confirmInteger = function(integer) {
   if (Number.isInteger(integer)) {
@@ -58,191 +59,229 @@ var iterator = function funcIterator(arr) {
 };
 
 
-var reverseIterator = function(arr) {
-  var list = confirmArray(arr);
-  var index = list.length;
-  var complete = false;
+var reverseIterator = function funcReverseIterator(arr) {
+    "use strict";
 
-  return Object.freeze({
-    done: function() {
-      return complete;
-    },
+    var list = confirmArray(arr);
+    var index = list.length;
+    var complete = (arr.length === 0);
 
-    step: function() {
-      index -= 1;
+    return Object.freeze({
+        done: function() {
+            return complete;
+          },
 
-      if (index < 1) {
-        complete = true;
-      }
+          step: function() {
+              if (index > -1) {
+                index -= 1;
+                complete = (index < 1);
 
-      if (index > -1) {
-        return list[index];
-      }
+                return list[index];
+              }
+          }
+    });
+};
+
+
+var times = function funcTimes(num, func) {
+    "use strict";
+
+    var freq = Math.max(0, confirmNumber(num));
+    var fn = confirmFunction(func);
+
+    while (freq > 0) {
+        fn();
+        freq -= 1;
     }
-  });
-}
-
-
-var times = function(num, func) {
-  var freq = num < 0 ? 0 : num;
-
-  while (freq > 0) {
-    func();
-    freq -= 1;
-  }
 }
 
 
 // - functors -
 
-var each = function(list, func) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
+var each = function funcEach(list, func) {
+    "use strict";
 
-  while (!listIter.done()) {
-    fn(listIter.step());
-  }
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+
+    while (!listIter.done()) {
+        fn(listIter.step());
+    }
 };
 
 
-var eachRight = function(list, func) {
-  var listIter = reverseIterator(list);
-  var fn = confirmFunction(func);
+var reverseEach = function funcReverseEach(list, func) {
+    "use strict";
 
-  while (!listIter.done()) {
-    fn(listIter.step());
-  }
+    var listIter = reverseIterator(list);
+    var fn = confirmFunction(func);
+
+    while (!listIter.done()) {
+        fn(listIter.step());
+    }
 }
 
 
 var enumerate = function(list, func, initial) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
-  var index = (initial || 0);
+    "use strict";
 
-  while (!listIter.done()) {
-    fn(index++, listIter.step());
-  }
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+    var index = 0;
+
+    if(initial) {
+        index = confirmInteger(initial);
+    }
+
+    while (!listIter.done()) {
+        fn(index, listIter.step());
+        index += 1;
+    }
 };
 
 
-var map = function(list, func) {
-  var mapList = [];
+var map = function(arr, func) {
+    "use strict";
 
-  each(list, function(item, index) {
-    mapList.push(func(item, index));
-  });
+    var list = confirmArray(arr);
+    var fn = confirmFunction(func);
 
-  return mapList;
+    var mapList = list.slice();
+
+    enumerate(list, function(index, item) {
+        mapList[index] = func(item);
+    });
+
+    return mapList;
 };
 
 
 var reduce = function(list, func, initial) {
-  var listIter = iterator(list);
-  var fn = confirmFunction(func);
-  var accumulator = (initial || listIter.step());
+    "use strict";
 
-  while (!listIter.done()) {
-    accumulator = fn(accumulator, listIter.step());
-  }
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+    var accumulator = initial;
 
-  return accumulator;
+    if(typeof accumulator === "undefined") {
+        accumulator = listIter.step();
+    }
+
+    while (!listIter.done()) {
+        accumulator = fn(accumulator, listIter.step());
+    }
+
+    return accumulator;
 };
 
 
-var reduceRight = function(list, func, initial) {
-  var listIter = reverseIterator(list);
-  var fn = confirmFunction(func);
-  var accumulator = (initial || listIter.step());
+var reverseReduce = function(list, func, initial) {
+      "use strict";
 
-  while (!listIter.done()) {
-    accumulator = fn(accumulator, listIter.step());
-  }
+      var listIter = reverseIterator(list);
+      var fn = confirmFunction(func);
+      var accumulator = initial;
 
-  return accumulator;
+      if(typeof accumulator === "undefined") {
+          accumulator = listIter.step();
+      }
+
+      while (!listIter.done()) {
+          accumulator = fn(accumulator, listIter.step());
+      }
+
+      return accumulator;
 };
 
 
 var filter = function(list, func) {
-  var fn = confirmFunction(func);
-  var filtered = [];
+    "use strict";
 
-  each(list, function(item) {
-    if (fn(item)) {
-      filtered.push(item);
-    }
-  });
+    var fn = confirmFunction(func);
+    var filtered = [];
 
-  return filtered;
+    each(list, function(item) {
+        if (fn(item)) {
+            filtered.push(item);
+        }
+    });
+
+    return filtered;
 };
 
 
 var reject = function(list, func) {
-  var fn = confirmFunction(func);
-  var rejected = [];
+    "use strict";
 
-  each(list, function(item) {
-    if (!fn(item)) {
-      rejected.push(item);
-    }
-  });
+    var fn = confirmFunction(func);
+    var rejected = [];
 
-  return rejected;
+    each(list, function(item) {
+        if (!fn(item)) {
+            rejected.push(item);
+        }
+    });
+
+    return rejected;
 };
 
 
 // - qualitators -
 
 var all = function(list, func) {
-  var fn = confirmFunction(func);
-  var bool = true;
+    "use strict";
 
-  each(list, function(item) {
-    if (!fn(item)) {
-      bool = false;
-      return;
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+
+    while (!listIter.done()) {
+        if (!(fn(listIter.step()) === true)) {
+            return false;
+        }
     }
-  });
 
-  return bool;
+    return true;
 };
 
 
 var any = function(list, func) {
-  var fn = confirmFunction(func);
-  var bool = false;
+    "use strict";
 
-  each(list, function(item) {
-    if (fn(item)) {
-      bool = true;
-      return;
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+
+    while (!listIter.done()) {
+        if (fn(listIter.step()) === true) {
+            return true;
+        }
     }
-  });
 
-  return bool;
+    return false;
 };
 
 
 var none = function(list, func) {
-  var fn = confirmFunction(fn);
-  var bool = true;
+    "use strict";
 
-  each(list, function(item) {
-    if (func(item)) {
-      bool = false;
-      return;
+    var listIter = iterator(list);
+    var fn = confirmFunction(func);
+
+    while (!listIter.done()) {
+        if (!!(fn(listIter.step())) === true) {
+            return false;
+        }
     }
-  });
 
-  return bool;
+    return true;
 };
 
 
 var count = function(list, func) {
+  var fn = confirmFunction(func);
   var tally = 0;
 
   each(list, function(item) {
-    if (func(item)) {
+    if (func(item) === true) {
       tally += 1;
     }
   });
