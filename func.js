@@ -6,54 +6,40 @@
 
 // - errors -
 
-const confirmArray = function funcConfirmArray(list) {
-  "use strict";
-
-  if (Array.isArray(list)) {
-    return list;
-  }
-
-  throw new TypeError("Argument is not of type Array.");
-}
+const confirmArray = (list) => (
+  (Array.isArray(list))
+    ? list
+    : throw new TypeError("Argument is not of type Array.");
+);
 
 
-const confirmInteger = function funcConfirmInteger(integer) {
-  "use strict";
-
-  if (Number.isInteger(integer)) {
-    return integer;
-  }
-
-  throw new TypeError("Argument is not of type Integer.");
-}
+const confirmInteger = (integer) => (
+  (Number.isInteger(integer))
+    ? list
+    : throw new TypeError("Argument is not of type Integer.");
+);
 
 
-const confirmFunction = function funcConfirmFunction(func) {
-  "use strict";
-
-  if (func instanceof Function) {
-    return func;
-  }
-
-  throw new TypeError("Argument is not of type Function.");
-}
+const confirmFunction = (func) => (
+  (func instanceof Function)
+    ? func
+    : throw new TypeError("Argument is not of type Function.");
+);
 
 
 // - iterators -
 
 const iterator = function funcIterator(arr) {
-  "use strict";
-
   let list = confirmArray(arr);
   let index = -1;
   let complete = (arr.length === 0);
 
   return Object.freeze({
-    done: function() {
+    done: function () {
       return complete;
     },
 
-    step: function() {
+    step: function () {
       if (index < list.length) {
         index += 1;
         complete = (index > list.length - 2)
@@ -66,18 +52,16 @@ const iterator = function funcIterator(arr) {
 
 
 const reverseIterator = function funcReverseIterator(arr) {
-  "use strict";
-
   let list = confirmArray(arr);
   let index = list.length;
   let complete = (arr.length === 0);
 
   return Object.freeze({
-    done: function() {
+    done: function () {
       return complete;
     },
 
-    step: function() {
+    step: function () {
       if (index > -1) {
         index -= 1;
         complete = (index < 1);
@@ -90,8 +74,6 @@ const reverseIterator = function funcReverseIterator(arr) {
 
 
 const times = function funcTimes(num, func) {
-  "use strict";
-
   let freq = Math.max(0, confirmInteger(num));
   let fn = confirmFunction(func);
 
@@ -105,8 +87,6 @@ const times = function funcTimes(num, func) {
 // - functors -
 
 const each = function funcEach(arr, func) {
-  "use strict";
-
   let listIter = iterator(arr);
   let fn = confirmFunction(func);
 
@@ -117,8 +97,6 @@ const each = function funcEach(arr, func) {
 
 
 const reverseEach = function funcReverseEach(arr, func) {
-  "use strict";
-
   let listIter = reverseIterator(arr);
   let fn = confirmFunction(func);
 
@@ -129,8 +107,6 @@ const reverseEach = function funcReverseEach(arr, func) {
 
 
 const enumerate = function funcEnumerate(arr, func, initial) {
-  "use strict";
-
   let listIter = iterator(arr);
   let fn = confirmFunction(func);
   let index = 0;
@@ -147,14 +123,12 @@ const enumerate = function funcEnumerate(arr, func, initial) {
 
 
 const map = function funcMap(arr, func) {
-  "use strict";
-
   let list = confirmArray(arr);
   let fn = confirmFunction(func);
 
   let mapList = list.slice();
 
-  enumerate(list, function(index, item) {
+  enumerate(list, function (index, item) {
     mapList[index] = func(item);
   });
 
@@ -163,8 +137,6 @@ const map = function funcMap(arr, func) {
 
 
 const reduce = function funcReduce(list, func, initial) {
-  "use strict";
-
   let listIter = iterator(list);
   let fn = confirmFunction(func);
   let accumulator = initial;
@@ -182,13 +154,11 @@ const reduce = function funcReduce(list, func, initial) {
 
 
 const reverseReduce = function funcReverseReduce(list, func, initial) {
-  "use strict";
-
   let listIter = reverseIterator(list);
   let fn = confirmFunction(func);
   let accumulator = initial;
 
-  if(typeof accumulator === "undefined") {
+  if (typeof accumulator === "undefined") {
     accumulator = listIter.step();
   }
 
@@ -201,12 +171,10 @@ const reverseReduce = function funcReverseReduce(list, func, initial) {
 
 
 const filter = function funcFilter(list, func) {
-  "use strict";
-
   let fn = confirmFunction(func);
   let filtered = [];
 
-  each(list, function(item) {
+  each(list, function (item) {
     if (fn(item) === true) {
       filtered.push(item);
     }
@@ -217,12 +185,10 @@ const filter = function funcFilter(list, func) {
 
 
 const reject = function funcReject(list, func) {
-  "use strict";
-
   let fn = confirmFunction(func);
   let rejected = [];
 
-  each(list, function(item) {
+  each(list, function (item) {
     if (fn(item) === false) {
       rejected.push(item);
     }
@@ -235,8 +201,6 @@ const reject = function funcReject(list, func) {
 // - qualitators -
 
 const all = function funcAll(list, func) {
-  "use strict";
-
   let listIter = iterator(list);
   let fn = confirmFunction(func);
 
@@ -251,8 +215,6 @@ const all = function funcAll(list, func) {
 
 
 const any = function funcAny(list, func) {
-  "use strict";
-
   let listIter = iterator(list);
   let fn = confirmFunction(func);
 
@@ -267,8 +229,6 @@ const any = function funcAny(list, func) {
 
 
 const none = function funcNone(list, func) {
-  "use strict";
-
   let listIter = iterator(list);
   let fn = confirmFunction(func);
 
@@ -283,12 +243,10 @@ const none = function funcNone(list, func) {
 
 
 const count = function funcCount(list, func) {
-  "use strict";
-
   let fn = confirmFunction(func);
   let tally = 0;
 
-  each(list, function(item) {
+  each(list, function (item) {
     if (func(item) === true) {
       tally += 1;
     }
@@ -298,30 +256,61 @@ const count = function funcCount(list, func) {
 }
 
 
+const max = function (arr, func) {
+  let list = confirmArray(arr);
+
+  let fn = (func)
+    ? confirmFunction(func)
+    : function (max, curr) { return max < curr; }
+
+  let maxFunc = function(max, curr) {
+    return fn(max, curr)
+      ? curr
+      : max;
+  }
+
+  return reduce(list, maxFunc, list[0]);
+}
+
+
+const min = function (arr, func) {
+  let list = confirmArray(arr);
+
+  let fn = (func)
+    ? confirmFunction(func)
+    : function (min, curr) { return min > curr; }
+
+  let minFunc = function(min, curr) {
+    return fn(min, curr)
+      ? curr
+      : min;
+  }
+
+  return reduce(list, minFunc, list[0]);
+}
+
+
 // - higher functions -
 
 const partial = function funcPartial() {
-  "use strict";
-
   let func = confirmFunction(arguments[0]);
   let boundArgs = Array.from(arguments).slice(1, arguments.length);
 
-  return function() {
+  return function () {
     return func.apply(undefined, boundArgs.concat(Array.from(arguments)));
   }
 }
 
 
 const curry = function funcCurry(num, func) {
-  "use strict";
-
   let times = confirmInteger(num);
   let fn = confirmFunction(func);
 
   let stock = [];
 
-  let curried = function(item) {
+  let curried = function (item) {
     stock.push(item);
+
     if (stock.length < times) {
       return curried;
     }
@@ -333,16 +322,15 @@ const curry = function funcCurry(num, func) {
 }
 
 
-var stretchCurry = function funcStretchCurry(num, func) {
-  "use strict";
+const stretchCurry = function funcStretchCurry(num, func) {
+  let times = confirmInteger(num);
+  let fn = confirmFunction(func);
 
-  var times = confirmInteger(num);
-  var fn = confirmFunction(func);
+  let stock = [];
 
-  var stock = [];
+  let curried = function () {
+    stock = stock.concat(Array.from(arguments));
 
-  var curried = function() {
-    stock = stock.concat(Array.from(arguments))
     if (stock.length < times) {
       return curried;
     }
@@ -351,15 +339,43 @@ var stretchCurry = function funcStretchCurry(num, func) {
   }
 
   return curried;
+}
+
+
+var only = function (times, func) {
+  var tally = 0;
+
+  var onlyd = function () {
+    if (tally < times - 1) {
+      return func.apply(undefined, arguments);
+    }
+
+    tally += 1;
+  }
+
+  return onlyd;
+}
+
+
+var after = function (times, func) {
+  var tally = times;
+
+  var afterd = function () {
+    if (tally < 1) {
+      return func.apply(undefined, arguments);
+    }
+
+    tally -= 1;
+  }
+
+  return afterd;
 }
 
 
 // - list factories -
 
 const range = function funcRange() {
-  "use strict";
-
-  let createRange = function(first, last, step, func) {
+  let createRange = function (first, last, step, func) {
     let run = [];
     let curr = first;
 
@@ -371,11 +387,11 @@ const range = function funcRange() {
     return run;
   }
 
-  let lessThan = function(curr, last) {
+  let lessThan = function (curr, last) {
     return curr < last;
   }
 
-  let greaterThan = function(curr, last) {
+  let greaterThan = function (curr, last) {
     return curr > last;
   }
 
@@ -412,17 +428,13 @@ const range = function funcRange() {
 
 
 const shuffle = function funcShuffle(arr) {
-  "use strict";
-
   let deck = confirmArray(arr).slice();
   let index = deck.length - 1;
-  let randomIndex = 0;
-  let tmp;
 
   while (index > 1) {
-    randomIndex = Math.floor(Math.random() * index);
+    let randomIndex = Math.floor(Math.random() * index);
 
-    tmp = deck[index];
+    let tmp = deck[index];
     deck[index] = deck[randomIndex];
     deck[randomIndex] = tmp;
 
@@ -434,8 +446,6 @@ const shuffle = function funcShuffle(arr) {
 
 
 const sample = function funcSample(arr, number) {
-  "use strict";
-
   let list = confirmArray(arr);
   let count = confirmInteger(number);
 
@@ -444,13 +454,11 @@ const sample = function funcSample(arr, number) {
 
 
 const unique = function funcUnique(arr) {
-  "use strict";
-
   let list = confirmArray(arr);
   let hashy = {};
   let uniqueList = [];
 
-  each(list, function(item) {
+  each(list, function (item) {
     if (hashy[item] === undefined) {
       hashy[item] = true;
       uniqueList.push(item);
@@ -461,15 +469,13 @@ const unique = function funcUnique(arr) {
 }
 
 
-var flatten = function funcFlatten(list) {
-  "use strict";
-
-  var flatList = [];
-  var queue = [];
+const flatten = function funcFlatten(list) {
+  let flatList = [];
+  let queue = [];
 
   queue.push(iterator(list));
 
-  while(queue.length !== 0) {
+  while (queue.length) {
     let currIter = queue.shift();
 
     while (!currIter.done()) {
@@ -488,72 +494,16 @@ var flatten = function funcFlatten(list) {
 }
 
 
-var max = function(list, func) {
-  var fn = func;
-
-  if (!func) {
-    fn = function(max, curr) {
-      return max < curr ? curr : max
-    }
-  }
-
-  return reduce(list, fn, list[0]);
-}
-
-
-var min = function(list, func) {
-  var fn = func;
-
-  if (!func) {
-    fn = function(min, curr) {
-      return curr < min ? curr : min
-    }
-  }
-
-  return reduce(list, fn, list[0]);
-}
-
-
-var only = function(times, func) {
-  var tally = 0;
-
-  var onlyd = function() {
-    if (tally < times - 1) {
-      return func.apply(undefined, arguments);
-    }
-
-    tally += 1;
-  }
-
-  return onlyd;
-}
-
-
-var after = function(times, func) {
-  var tally = times;
-
-  var afterd = function() {
-    if (tally < 1) {
-      return func.apply(undefined, arguments);
-    }
-
-    tally -= 1;
-  }
-
-  return afterd;
-}
-
-
-var freeze = function(obj) {
+var freeze = function (obj) {
   if (Array.isArray(obj)) {
-    obj.forEach(function(value) {
+    obj.forEach(function (value) {
       if (typeof value === "object") {
         freeze(value);
       }
     });
     Object.freeze(obj);
   } else if (typeof obj === "object") {
-    Object.keys(obj).forEach(function(key) {
+    Object.keys(obj).forEach(function (key) {
       if (typeof obj[key] === "object") {
         freeze(obj[key]);
       }
@@ -565,7 +515,7 @@ var freeze = function(obj) {
 
 // ridiculous
 
-var print = function() {
+var print = function () {
   console.log.apply(undefined, arguments);
   return arguments;
 }
@@ -588,9 +538,13 @@ export {
   any,
   none,
   count,
+  max,
+  min,
   partial,
   curry,
   stretchCurry,
+  only,
+  after,
   range,
   shuffle,
   sample,

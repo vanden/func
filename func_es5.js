@@ -15,7 +15,7 @@ var confirmArray = function funcConfirmArray(list) {
 };
 
 
-var confirmInteger = function(integer) {
+var confirmInteger = function (integer) {
   if (Number.isInteger(integer)) {
     return number;
   }
@@ -24,7 +24,7 @@ var confirmInteger = function(integer) {
 }
 
 
-var confirmFunction = function(func) {
+var confirmFunction = function (func) {
   if (func instanceof "function") {
     return func;
   }
@@ -67,11 +67,11 @@ var reverseIterator = function funcReverseIterator(arr) {
     var complete = (arr.length === 0);
 
     return Object.freeze({
-        done: function() {
+        done: function () {
             return complete;
           },
 
-          step: function() {
+          step: function () {
               if (index > -1) {
                 index -= 1;
                 complete = (index < 1);
@@ -148,7 +148,7 @@ var map = function (arr, func) {
 
     var mapList = list.slice();
 
-    enumerate(list, function(index, item) {
+    enumerate(list, function (index, item) {
         mapList[index] = func(item);
     });
 
@@ -163,7 +163,7 @@ var reduce = function (list, func, initial) {
     var fn = confirmFunction(func);
     var accumulator = initial;
 
-    if(typeof accumulator === "undefined") {
+    if (typeof accumulator === "undefined") {
         accumulator = listIter.step();
     }
 
@@ -182,7 +182,7 @@ var reverseReduce = function (list, func, initial) {
     var fn = confirmFunction(func);
     var accumulator = initial;
 
-    if(typeof accumulator === "undefined") {
+    if (typeof accumulator === "undefined") {
         accumulator = listIter.step();
     }
 
@@ -200,7 +200,7 @@ var filter = function (list, func) {
     var fn = confirmFunction(func);
     var filtered = [];
 
-    each(list, function(item) {
+    each(list, function (item) {
         if (fn(item) === true) {
             filtered.push(item);
         }
@@ -216,7 +216,7 @@ var reject = function (list, func) {
     var fn = confirmFunction(func);
     var rejected = [];
 
-    each(list, function(item) {
+    each(list, function (item) {
         if (fn(item) === false) {
             rejected.push(item);
         }
@@ -282,13 +282,51 @@ var count = function (list, func) {
     var fn = confirmFunction(func);
     var tally = 0;
 
-    each(list, function(item) {
+    each(list, function (item) {
         if (func(item) === true) {
             tally += 1;
         }
     });
 
     return tally;
+}
+
+
+var max = function (arr, func) {
+    "use strict";
+
+    var list = confirmArray(arr);
+
+    var fn = (func)
+        ? confirmFunction(func)
+        : function (max, curr) { return max < curr; }
+
+    var maxFunc = function(max, curr) {
+        return fn(max, curr)
+            ? curr
+            : max;
+    }
+
+    return reduce(list, maxFunc, list[0]);
+}
+
+
+var min = function (arr, func) {
+    "use strict";
+
+    var list = confirmArray(arr);
+
+    var fn = (func)
+        ? confirmFunction(func)
+        : function (min, curr) { return min > curr; }
+
+    var minFunc = function(min, curr) {
+        return fn(min, curr)
+            ? curr
+            : min;
+    }
+
+    return reduce(list, minFunc, list[0]);
 }
 
 
@@ -300,7 +338,7 @@ var partial = function funcPartial() {
     var func = confirmFunction(arguments[0]);
     var boundArgs = Array.from(arguments).slice(1, arguments.length);
 
-    return function() {
+    return function () {
         return func.apply(undefined, boundArgs.concat(Array.from(arguments)));
     }
 }
@@ -314,7 +352,7 @@ var curry = function funcCurry(num, func) {
 
     var stock = [];
 
-    var curried = function(item) {
+    var curried = function (item) {
         stock.push(item);
         if (stock.length < times) {
             return curried;
@@ -335,7 +373,7 @@ var stretchCurry = function funcStretchCurry(num, func) {
 
     var stock = [];
 
-    var curried = function() {
+    var curried = function () {
         stock = stock.concat(Array.from(arguments))
         if (stock.length < times) {
             return curried;
@@ -351,7 +389,7 @@ var stretchCurry = function funcStretchCurry(num, func) {
 // - list factories -
 
 var range = function funcRange() {
-    var createRange = function(first, last, step, func) {
+    var createRange = function (first, last, step, func) {
         var run = [];
         var curr = first;
 
@@ -363,11 +401,11 @@ var range = function funcRange() {
         return run;
     }
 
-    var lessThan = function(curr, last) {
+    var lessThan = function (curr, last) {
         return curr < last;
     }
 
-    var greaterThan = function(curr, last) {
+    var greaterThan = function (curr, last) {
         return curr > last;
     }
 
@@ -425,7 +463,7 @@ var shuffle = function funcShuffle(arr) {
 }
 
 
-var sample = function(arr, number) {
+var sample = function (arr, number) {
     "use strict";
 
     var list = confirmArray(arr);
@@ -442,7 +480,7 @@ var const unique = function funcUnique(arr) {
     var hashy = {};
     var uniqueList = [];
 
-    each(list, function(item) {
+    each(list, function (item) {
         if (hashy[item] === undefined) {
             hashy[item] = true;
             uniqueList.push(item);
@@ -463,7 +501,7 @@ var flatten = function funcFlatten(list) {
 
     queue.push(iterator(list));
 
-    while(queue.length !== 0) {
+    while (queue.length) {
         currIter = queue.shift();
 
         while (!currIter.done()) {
@@ -482,11 +520,11 @@ var flatten = function funcFlatten(list) {
 }
 
 
-var max = function(list, func) {
+var max = function (list, func) {
   var fn = func;
 
   if (!func) {
-    fn = function(max, curr) {
+    fn = function (max, curr) {
       return max < curr ? curr : max
     }
   }
@@ -495,11 +533,11 @@ var max = function(list, func) {
 }
 
 
-var min = function(list, func) {
+var min = function (list, func) {
   var fn = func;
 
   if (!func) {
-    fn = function(min, curr) {
+    fn = function (min, curr) {
       return curr < min ? curr : min
     }
   }
@@ -508,10 +546,10 @@ var min = function(list, func) {
 }
 
 
-var only = function(times, func) {
+var only = function (times, func) {
   var tally = 0;
 
-  var onlyd = function() {
+  var onlyd = function () {
     if (tally < times - 1) {
       return func.apply(undefined, arguments);
     }
@@ -523,10 +561,10 @@ var only = function(times, func) {
 }
 
 
-var after = function(times, func) {
+var after = function (times, func) {
   var tally = times;
 
-  var afterd = function() {
+  var afterd = function () {
     if (tally < 1) {
       return func.apply(undefined, arguments);
     }
