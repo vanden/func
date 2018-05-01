@@ -66,7 +66,7 @@ describe("Test the behavior of filter()", function () {
 
     it("doesn't allow truthy passes", function() {
       var expected = [];
-      var start = [1, "hello", [1]];
+      var start = [1, "hello", [1], {}];
 
       var result = filter(start, function(value) {
         return value;

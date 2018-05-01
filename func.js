@@ -128,7 +128,7 @@ const reverseEach = function funcReverseEach(arr, func) {
 }
 
 
-const enumerate = function(arr, func, initial) {
+const enumerate = function funcEnumerate(arr, func, initial) {
   "use strict";
 
   let listIter = iterator(arr);
@@ -146,7 +146,7 @@ const enumerate = function(arr, func, initial) {
 };
 
 
-const map = function(arr, func) {
+const map = function funcMap(arr, func) {
   "use strict";
 
   let list = confirmArray(arr);
@@ -162,7 +162,7 @@ const map = function(arr, func) {
 };
 
 
-const reduce = function(list, func, initial) {
+const reduce = function funcReduce(list, func, initial) {
   "use strict";
 
   let listIter = iterator(list);
@@ -181,7 +181,7 @@ const reduce = function(list, func, initial) {
 };
 
 
-const reverseReduce = function(list, func, initial) {
+const reverseReduce = function funcReverseReduce(list, func, initial) {
   "use strict";
 
   let listIter = reverseIterator(list);
@@ -200,7 +200,7 @@ const reverseReduce = function(list, func, initial) {
 };
 
 
-const filter = function(list, func) {
+const filter = function funcFilter(list, func) {
   "use strict";
 
   let fn = confirmFunction(func);
@@ -216,7 +216,7 @@ const filter = function(list, func) {
 };
 
 
-const reject = function(list, func) {
+const reject = function funcReject(list, func) {
   "use strict";
 
   let fn = confirmFunction(func);
@@ -234,14 +234,14 @@ const reject = function(list, func) {
 
 // - qualitators -
 
-const all = function(list, func) {
+const all = function funcAll(list, func) {
   "use strict";
 
   let listIter = iterator(list);
   let fn = confirmFunction(func);
 
   while (!listIter.done()) {
-    if (!(fn(listIter.step()) === true)) {
+    if (fn(listIter.step()) === false) {
       return false;
     }
   }
@@ -250,7 +250,7 @@ const all = function(list, func) {
 };
 
 
-const any = function(list, func) {
+const any = function funcAny(list, func) {
   "use strict";
 
   let listIter = iterator(list);
@@ -266,14 +266,14 @@ const any = function(list, func) {
 };
 
 
-const none = function(list, func) {
+const none = function funcNone(list, func) {
   "use strict";
 
   let listIter = iterator(list);
   let fn = confirmFunction(func);
 
   while (!listIter.done()) {
-    if (!!(fn(listIter.step())) === true) {
+    if (fn(listIter.step()) === true) {
       return false;
     }
   }
@@ -282,10 +282,11 @@ const none = function(list, func) {
 };
 
 
-const count = function(list, func) {
-  let tally = 0;
+const count = function funcCount(list, func) {
+  "use strict";
 
   let fn = confirmFunction(func);
+  let tally = 0;
 
   each(list, function(item) {
     if (func(item) === true) {
@@ -299,9 +300,11 @@ const count = function(list, func) {
 
 // - higher functions -
 
-var partial = function() {
-  var func = arguments[arguments.length - 1];
-  var boundArgs = Array.from(arguments).slice(0, arguments.length - 1);
+const partial = function funcPartial() {
+  "use strict";
+
+  let func = confirmFunction(arguments[0]);
+  let boundArgs = Array.from(arguments).slice(1, arguments.length);
 
   return function() {
     return func.apply(undefined, boundArgs.concat(Array.from(arguments)));
@@ -309,35 +312,42 @@ var partial = function() {
 }
 
 
-var curry = function(times, func) {
-  var stock = [];
-  var curried = function(item) {
-    stock.push(item);
+const curry = function funcCurry(num, func) {
+  "use strict";
 
-    if (stock.length === times) {
-      return func(stock);
+  let times = confirmInteger(num);
+  let fn = confirmFunction(func);
+
+  let stock = [];
+
+  let curried = function(item) {
+    stock.push(item);
+    if (stock.length < times) {
+      return curried;
     }
 
-    return curried;
+    return fn.apply(undefined, stock);
   }
 
   return curried;
 }
 
 
-var dirtyCurry = function(times, func) {
+var stretchCurry = function funcStretchCurry(num, func) {
+  "use strict";
+
+  var times = confirmInteger(num);
+  var fn = confirmFunction(func);
+
   var stock = [];
 
   var curried = function() {
-    for (var j = 0; j < arguments.length; j++) {
-      stock.push(arguments[j]);
-
-      if (stock.length === times) {
-        return func(stock);
-      }
+    stock = stock.concat(Array.from(arguments))
+    if (stock.length < times) {
+      return curried;
     }
 
-    return curried;
+    return fn.apply(undefined, stock);
   }
 
   return curried;
@@ -549,6 +559,14 @@ var freeze = function(obj) {
 }
 
 
+// ridiculous
+
+var print = function() {
+  console.log.apply(undefined, arguments);
+  return arguments;
+}
+
+
 
 export {
   iterator,
@@ -565,5 +583,8 @@ export {
   all,
   any,
   none,
-  count
+  count,
+  partial,
+  curry,
+  stretchCurry
 }
