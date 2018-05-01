@@ -356,6 +356,59 @@ var stretchCurry = function funcStretchCurry(num, func) {
 
 // - list factories -
 
+const range = function funcRange() {
+  let createRange = function(first, last, step, func) {
+    let run = [];
+    let curr = first;
+
+    while (func(curr, last)) {
+      run.push(curr);
+      curr += step;
+    }
+
+    return run;
+  }
+
+  let lessThan = function(curr, last) {
+    return curr < last;
+  }
+
+  let greaterThan = function(curr, last) {
+    return curr > last;
+  }
+
+  let first = 0;
+  let last = 0;
+  let step = 1;
+  let fn = lessThan;
+
+  if (arguments.length === 1) {
+    last = confirmInteger(arguments[0]);
+  }
+
+  if (arguments.length === 2) {
+    first = confirmInteger(arguments[0]);
+    last = confirmInteger(arguments[1]);
+  }
+
+  if (arguments.length === 3) {
+    first = confirmInteger(arguments[0]);
+    last = confirmInteger(arguments[1]);
+    step = confirmInteger(arguments[2]);
+  }
+
+  if (step === 0 || (first > last && step > 0)) {
+    return [];
+  }
+
+  if (first > last) {
+    fn = greaterThan;
+  }
+
+  return createRange(first, last, step, fn);
+}
+
+
 var shuffle = function(list) {
   var deck = list.slice();
   var i = 0;
@@ -379,54 +432,6 @@ var shuffle = function(list) {
 var sample = function(list, amount) {
   let total = (amount || 1);
   return shuffle(list).slice(0, total);
-}
-
-
-var range = function() {
-  var run = [];
-  var start = 0;
-  var end = arguments[0];
-  var skip = 1;
-
-  switch (arguments.length) {
-    case 0:
-      return [];
-      break;
-    case 2:
-      start = arguments[0];
-      end = arguments[1];
-      break;
-    case 3:
-      skip = arguments[2];
-
-      if (skip === 0) {
-        return run;
-      }
-
-      break;
-  }
-
-  if (start < end) {
-    if (skip < 1) {
-      return run;
-    }
-    while (start < end) {
-      run.push(start);
-      start += skip;
-    }
-  }
-
-  if (end < start) {
-    if (skip > 0) {
-      return run;
-    }
-    while (start > end) {
-      run.push(start);
-      start += skip;
-    }
-  }
-
-  return run;
 }
 
 
@@ -586,5 +591,6 @@ export {
   count,
   partial,
   curry,
-  stretchCurry
+  stretchCurry,
+  range
 }

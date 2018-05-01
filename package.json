@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "mocha tests/*.js --require babel-register || exit 0",
-    "test-single": "mocha tests/test_stretchCurry.js --require babel-register || exit 0"
+    "test-single": "mocha tests/test_range.js --require babel-register || exit 0"
   },
   "repository": {
     "type": "git",
