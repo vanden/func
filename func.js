@@ -357,6 +357,8 @@ var stretchCurry = function funcStretchCurry(num, func) {
 // - list factories -
 
 const range = function funcRange() {
+  "use strict";
+
   let createRange = function(first, last, step, func) {
     let run = [];
     let curr = first;
@@ -409,50 +411,47 @@ const range = function funcRange() {
 }
 
 
-var shuffle = function(list) {
-  var deck = list.slice();
-  var i = 0;
-  var j = deck.length - 1;
-  var tmp;
+const shuffle = function funcShuffle(arr) {
+  "use strict";
 
-  while (j > 1) {
-    i = Math.floor(Math.random() * j);
+  let deck = confirmArray(arr).slice();
+  let index = deck.length - 1;
+  let randomIndex = 0;
+  let tmp;
 
-    tmp = deck[j];
-    deck[j] = deck[i];
-    deck[i] = tmp;
+  while (index > 1) {
+    randomIndex = Math.floor(Math.random() * index);
 
-    j -= 1;
+    tmp = deck[index];
+    deck[index] = deck[randomIndex];
+    deck[randomIndex] = tmp;
+
+    index -= 1;
   }
 
   return deck;
 }
 
 
-var sample = function(list, amount) {
-  let total = (amount || 1);
-  return shuffle(list).slice(0, total);
+const sample = function funcSample(arr, number) {
+  "use strict";
+
+  let list = confirmArray(arr);
+  let count = confirmInteger(number);
+
+  return shuffle(list).slice(0, count);
 }
 
 
-var bind = function(func, context) {
-  return function() {
-    func.apply(undefined, context);
-  }
-}
+const unique = function funcUnique(arr) {
+  "use strict";
 
-
-
-var unique = function(list) {
-  if (!list || !list.length || !Array.isArray(list)) {
-    return [];
-  }
-
-  var hashy = {};
-  var uniqueList = [];
+  let list = confirmArray(arr);
+  let hashy = {};
+  let uniqueList = [];
 
   each(list, function(item) {
-    if (!hashy[item]) {
+    if (hashy[item] === undefined) {
       hashy[item] = true;
       uniqueList.push(item);
     }
@@ -462,19 +461,19 @@ var unique = function(list) {
 }
 
 
-var flatten = function(list) {
+var flatten = function funcFlatten(list) {
+  "use strict";
+
   var flatList = [];
   var queue = [];
-  var currIter;
-  var item;
 
   queue.push(iterator(list));
 
   while(queue.length !== 0) {
-    currIter = queue.shift();
+    let currIter = queue.shift();
 
     while (!currIter.done()) {
-      item = currIter.step();
+      let item = currIter.step();
 
       if (Array.isArray(item)) {
         queue.push(currIter);
@@ -592,5 +591,9 @@ export {
   partial,
   curry,
   stretchCurry,
-  range
+  range,
+  shuffle,
+  sample,
+  unique,
+  flatten
 }
