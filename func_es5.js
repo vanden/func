@@ -350,131 +350,135 @@ var stretchCurry = function funcStretchCurry(num, func) {
 
 // - list factories -
 
-var shuffle = function(list) {
-  var deck = list.slice();
-  var i = 0;
-  var j = deck.length - 1;
-  var tmp;
+var range = function funcRange() {
+    var createRange = function(first, last, step, func) {
+        var run = [];
+        var curr = first;
 
-  while (j > 1) {
-    i = Math.floor(Math.random() * j);
+        while (func(curr, last)) {
+            run.push(curr);
+            curr += step;
+        }
 
-    tmp = deck[j];
-    deck[j] = deck[i];
-    deck[i] = tmp;
-
-    j -= 1;
-  }
-
-  return deck;
-}
-
-
-var sample = function(list, amount) {
-  let total = (amount || 1);
-  return shuffle(list).slice(0, total);
-}
-
-
-var range = function() {
-  var run = [];
-  var start = 0;
-  var end = arguments[0];
-  var skip = 1;
-
-  switch (arguments.length) {
-    case 0:
-      return [];
-      break;
-    case 2:
-      start = arguments[0];
-      end = arguments[1];
-      break;
-    case 3:
-      skip = arguments[2];
-
-      if (skip === 0) {
         return run;
-      }
-
-      break;
-  }
-
-  if (start < end) {
-    if (skip < 1) {
-      return run;
     }
-    while (start < end) {
-      run.push(start);
-      start += skip;
-    }
-  }
 
-  if (end < start) {
-    if (skip > 0) {
-      return run;
+    var lessThan = function(curr, last) {
+        return curr < last;
     }
-    while (start > end) {
-      run.push(start);
-      start += skip;
-    }
-  }
 
-  return run;
+    var greaterThan = function(curr, last) {
+        return curr > last;
+    }
+
+    var first = 0;
+    var last = 0;
+    var step = 1;
+    var fn = lessThan;
+
+    if (arguments.length === 1) {
+        last = confirmInteger(arguments[0]);
+    }
+
+    if (arguments.length === 2) {
+        first = confirmInteger(arguments[0]);
+        last = confirmInteger(arguments[1]);
+    }
+
+    if (arguments.length === 3) {
+        first = confirmInteger(arguments[0]);
+        last = confirmInteger(arguments[1]);
+        step = confirmInteger(arguments[2]);
+    }
+
+    if (step === 0 || (first > last && step > 0)) {
+        return [];
+    }
+
+    if (first > last) {
+        fn = greaterThan;
+    }
+
+    return createRange(first, last, step, fn);
 }
 
 
-var bind = function(func, context) {
-  return function() {
-    func.apply(undefined, context);
-  }
+var shuffle = function funcShuffle(arr) {
+    "use strict";
+
+    var deck = confirmArray(arr).slice();
+    var index = deck.length - 1;
+    var randomIndex = 0;
+    var tmp;
+
+    while (index > 1) {
+        randomIndex = Math.floor(Math.random() * index);
+
+        tmp = deck[index];
+        deck[index] = deck[randomIndex];
+        deck[randomIndex] = tmp;
+
+        index -= 1;
+    }
+
+    return deck;
 }
 
 
+var sample = function(arr, number) {
+    "use strict";
 
-var unique = function(list) {
-  if (!list || !list.length || !Array.isArray(list)) {
-    return [];
-  }
+    var list = confirmArray(arr);
+    var count = confirmInteger(number);
 
-  var hashy = {};
-  var uniqueList = [];
-
-  each(list, function(item) {
-    if (!hashy[item]) {
-      hashy[item] = true;
-      uniqueList.push(item);
-    }
-  });
-
-  return uniqueList;
+    return shuffle(list).slice(0, count);
 }
 
 
-var flatten = function(list) {
-  var flatList = [];
-  var queue = [];
-  var currIter;
-  var item;
+var const unique = function funcUnique(arr) {
+    "use strict";
 
-  queue.push(iterator(list));
+    var list = confirmArray(arr);
+    var hashy = {};
+    var uniqueList = [];
 
-  while(queue.length !== 0) {
-    currIter = queue.shift();
+    each(list, function(item) {
+        if (hashy[item] === undefined) {
+            hashy[item] = true;
+            uniqueList.push(item);
+        }
+    });
 
-    while (!currIter.done()) {
-      item = currIter.step();
+    return uniqueList;
+}
 
-      if (Array.isArray(item)) {
-        queue.push(currIter);
-        currIter = iterator(item);
-      } else {
-        flatList.push(item);
-      }
+
+var flatten = function funcFlatten(list) {
+    "use strict";
+
+    var flatList = [];
+    var queue = [];
+    var currIter;
+    var item;
+
+    queue.push(iterator(list));
+
+    while(queue.length !== 0) {
+        currIter = queue.shift();
+
+        while (!currIter.done()) {
+            item = currIter.step();
+
+            if (Array.isArray(item)) {
+                queue.push(currIter);
+                currIter = iterator(item);
+            } else {
+                flatList.push(item);
+            }
+        }
     }
-  }
 
-  return flatList;
+    return flatList;
 }
 
 
