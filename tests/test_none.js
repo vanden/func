@@ -67,7 +67,7 @@ describe("Test the behavior of none()", function () {
 
     it("not allow truthy passes", function() {
       var expected = false;
-      var start = ["1", [1], 1];
+      var start = ["1", [1], 1, {}, true];
 
       var result = none(start, function(value) {
         return value;

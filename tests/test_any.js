@@ -66,7 +66,7 @@ describe("Test the behavior of any()", function () {
 
     it("not anyow truthy passes", function() {
       var expected = false;
-      var start = ["1", [1], 1];
+      var start = ["1", [1], 1, {}];
 
       var result = any(start, function(value) {
         return value;

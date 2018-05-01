@@ -122,7 +122,7 @@ var reverseEach = function funcReverseEach(list, func) {
 }
 
 
-var enumerate = function(list, func, initial) {
+var enumerate = function (list, func, initial) {
     "use strict";
 
     var listIter = iterator(list);
@@ -140,7 +140,7 @@ var enumerate = function(list, func, initial) {
 };
 
 
-var map = function(arr, func) {
+var map = function (arr, func) {
     "use strict";
 
     var list = confirmArray(arr);
@@ -156,7 +156,7 @@ var map = function(arr, func) {
 };
 
 
-var reduce = function(list, func, initial) {
+var reduce = function (list, func, initial) {
     "use strict";
 
     var listIter = iterator(list);
@@ -175,33 +175,33 @@ var reduce = function(list, func, initial) {
 };
 
 
-var reverseReduce = function(list, func, initial) {
-      "use strict";
+var reverseReduce = function (list, func, initial) {
+    "use strict";
 
-      var listIter = reverseIterator(list);
-      var fn = confirmFunction(func);
-      var accumulator = initial;
+    var listIter = reverseIterator(list);
+    var fn = confirmFunction(func);
+    var accumulator = initial;
 
-      if(typeof accumulator === "undefined") {
-          accumulator = listIter.step();
-      }
+    if(typeof accumulator === "undefined") {
+        accumulator = listIter.step();
+    }
 
-      while (!listIter.done()) {
-          accumulator = fn(accumulator, listIter.step());
-      }
+    while (!listIter.done()) {
+        accumulator = fn(accumulator, listIter.step());
+    }
 
-      return accumulator;
+    return accumulator;
 };
 
 
-var filter = function(list, func) {
+var filter = function (list, func) {
     "use strict";
 
     var fn = confirmFunction(func);
     var filtered = [];
 
     each(list, function(item) {
-        if (fn(item)) {
+        if (fn(item) === true) {
             filtered.push(item);
         }
     });
@@ -210,14 +210,14 @@ var filter = function(list, func) {
 };
 
 
-var reject = function(list, func) {
+var reject = function (list, func) {
     "use strict";
 
     var fn = confirmFunction(func);
     var rejected = [];
 
     each(list, function(item) {
-        if (!fn(item)) {
+        if (fn(item) === false) {
             rejected.push(item);
         }
     });
@@ -228,7 +228,7 @@ var reject = function(list, func) {
 
 // - qualitators -
 
-var all = function(list, func) {
+var all = function (list, func) {
     "use strict";
 
     var listIter = iterator(list);
@@ -244,7 +244,7 @@ var all = function(list, func) {
 };
 
 
-var any = function(list, func) {
+var any = function (list, func) {
     "use strict";
 
     var listIter = iterator(list);
@@ -260,7 +260,7 @@ var any = function(list, func) {
 };
 
 
-var none = function(list, func) {
+var none = function (list, func) {
     "use strict";
 
     var listIter = iterator(list);
@@ -276,64 +276,75 @@ var none = function(list, func) {
 };
 
 
-var count = function(list, func) {
-  var fn = confirmFunction(func);
-  var tally = 0;
+var count = function (list, func) {
+    "use strict";
 
-  each(list, function(item) {
-    if (func(item) === true) {
-      tally += 1;
-    }
-  });
+    var fn = confirmFunction(func);
+    var tally = 0;
 
-  return tally;
+    each(list, function(item) {
+        if (func(item) === true) {
+            tally += 1;
+        }
+    });
+
+    return tally;
 }
 
 
 // - higher functions -
 
-var partial = function() {
-  var func = arguments[arguments.length - 1];
-  var boundArgs = Array.from(arguments).slice(0, arguments.length - 1);
+var partial = function funcPartial() {
+    "use strict";
 
-  return function() {
-    return func.apply(undefined, boundArgs.concat(Array.from(arguments)));
-  }
+    var func = confirmFunction(arguments[0]);
+    var boundArgs = Array.from(arguments).slice(1, arguments.length);
+
+    return function() {
+        return func.apply(undefined, boundArgs.concat(Array.from(arguments)));
+    }
 }
 
 
-var curry = function(times, func) {
-  var stock = [];
-  var curried = function(item) {
-    stock.push(item);
+var curry = function funcCurry(num, func) {
+    "use strict";
 
-    if (stock.length === times) {
-      return func(stock);
+    var times = confirmInteger(num);
+    var fn = confirmFunction(func);
+
+    var stock = [];
+
+    var curried = function(item) {
+        stock.push(item);
+        if (stock.length < times) {
+            return curried;
+        }
+
+        return fn.apply(undefined, stock);
     }
 
     return curried;
-  }
-
-  return curried;
 }
 
 
-var dirtyCurry = function(times, func) {
-  var stock = [];
+var stretchCurry = function funcStretchCurry(num, func) {
+    "use strict";
 
-  var curried = function() {
-    for (var j = 0; j < arguments.length; j++) {
-      stock.push(arguments[j]);
+    var times = confirmInteger(num);
+    var fn = confirmFunction(func);
 
-      if (stock.length === times) {
-        return func(stock);
-      }
+    var stock = [];
+
+    var curried = function() {
+        stock = stock.concat(Array.from(arguments))
+        if (stock.length < times) {
+            return curried;
+        }
+
+        return fn.apply(undefined, stock);
     }
 
     return curried;
-  }
-
-  return curried;
 }
 
 
