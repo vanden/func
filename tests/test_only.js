@@ -24,31 +24,54 @@ describe("Test the behavior of only()", function () {
   })
 
   describe("The default behavior of only() should ...", function() {
-    it("doesn't execute when given a negative number", function() {
-      var tick = 0;
-      only(-1, function() {
-        tick += 1;
-      })
-
-      expect(tick).to.be.equal(0);
-    })
-
-    it("doesn't execute when given a zero", function() {
-      var tick = 0;
-      only(-1, function() {
-        tick += 1;
-      })
-
-      expect(tick).to.be.equal(0);
-    })
-
-    it("execute a function a given number of only", function() {
+    it("not initially execute", function() {
       var tick = 0;
       only(3, function() {
         tick += 1;
       })
 
-      expect(tick).to.be.equal(3);
+      expect(tick).to.be.equal(0);
+    })
+
+    it("not execute when given a zero", function() {
+      var tick = 0;
+      var onlied = only(0, function() {
+        tick += 1;
+      })
+
+      onlied();
+      onlied();
+      onlied();
+
+      expect(tick).to.be.equal(0);
+    })
+
+    it("execute a correct number of times after provided times", function() {
+      var tick = 0;
+      var onlied = only(2, function() {
+        tick += 1;
+      })
+
+      onlied();
+      onlied();
+      onlied();
+      onlied();
+      onlied();
+
+      expect(tick).to.be.equal(2);
+    })
+
+
+    it("returns the correct result for the correct calls", function() {
+      var expected = "hello, world!";
+      var onlied = only(3, function() {
+        return "hello, world!";
+      })
+
+      expect(onlied()).to.be.equal(expected);
+      expect(onlied()).to.be.equal(expected);
+      expect(onlied()).to.be.equal(expected);
+      expect(onlied()).to.be.equal(undefined);
     })
   })
 })

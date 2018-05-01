@@ -520,49 +520,28 @@ var flatten = function funcFlatten(list) {
 }
 
 
-var max = function (list, func) {
-  var fn = func;
+var only = function funcOnly(number, func) {
+    "use strict";
 
-  if (!func) {
-    fn = function (max, curr) {
-      return max < curr ? curr : max
+    var times = confirmInteger(number);
+    var fn = confirmFunction(func);
+
+    var tally = 0;
+
+    var onlyd = function () {
+        if (tally < times) {
+            tally += 1;
+            return fn.apply(undefined, arguments);
+        }
     }
-  }
 
-  return reduce(list, fn, list[0]);
+    return onlyd;
 }
 
 
-var min = function (list, func) {
-  var fn = func;
-
-  if (!func) {
-    fn = function (min, curr) {
-      return curr < min ? curr : min
-    }
-  }
-
-  return reduce(list, fn, list[0]);
-}
-
-
-var only = function (times, func) {
-  var tally = 0;
-
-  var onlyd = function () {
-    if (tally < times - 1) {
-      return func.apply(undefined, arguments);
-    }
-
-    tally += 1;
-  }
-
-  return onlyd;
-}
-
-
-var after = function (times, func) {
-  var tally = times;
+var after = function (number, func) {
+  var tally = confirmInteger(number);
+  var fn = confirmFunction(func);
 
   var afterd = function () {
     if (tally < 1) {

@@ -4,27 +4,31 @@
 // MIT License
 
 
-// - errors -
+// - error handling -
 
-const confirmArray = (list) => (
-  (Array.isArray(list))
-    ? list
-    : throw new TypeError("Argument is not of type Array.");
-);
+const confirmArray = function (list) {
+  if (Array.isArray(list)) {
+    return list;
+  }
 
+  throw new TypeError("Argument is not of type Array.")
+};
 
-const confirmInteger = (integer) => (
-  (Number.isInteger(integer))
-    ? list
-    : throw new TypeError("Argument is not of type Integer.");
-);
+const confirmInteger = function (integer) {
+  if (Number.isInteger(integer)) {
+    return integer;
+  }
 
+  throw new TypeError("Argument is not of type Integer.")
+};
 
-const confirmFunction = (func) => (
-  (func instanceof Function)
-    ? func
-    : throw new TypeError("Argument is not of type Function.");
-);
+const confirmFunction = function (func) {
+  if (func instanceof Function) {
+    return func;
+  }
+
+  throw new TypeError("Argument is not of type Function.")
+};
 
 
 // - iterators -
@@ -342,25 +346,28 @@ const stretchCurry = function funcStretchCurry(num, func) {
 }
 
 
-var only = function (times, func) {
-  var tally = 0;
+const only = function (number, func) {
+  let times = confirmInteger(number);
+  let fn = confirmFunction(func);
 
-  var onlyd = function () {
-    if (tally < times - 1) {
-      return func.apply(undefined, arguments);
+  let tally = 0;
+
+  let onlyd = function () {
+    if (tally < times) {
+      tally += 1;
+      return fn.apply(undefined, arguments);
     }
-
-    tally += 1;
   }
 
   return onlyd;
 }
 
 
-var after = function (times, func) {
-  var tally = times;
+const after = function (number, func) {
+  let tally = confirmInteger(number);
+  let fn = confirmFunction(func);
 
-  var afterd = function () {
+  let afterd = function () {
     if (tally < 1) {
       return func.apply(undefined, arguments);
     }
