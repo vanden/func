@@ -386,6 +386,40 @@ var stretchCurry = function funcStretchCurry(num, func) {
 }
 
 
+var only = function funcOnly(number, func) {
+    "use strict";
+
+    var times = confirmInteger(number);
+    var fn = confirmFunction(func);
+
+    var tally = 0;
+
+    var onlyd = function () {
+        if (tally < times) {
+            tally += 1;
+            return fn.apply(undefined, arguments);
+        }
+    }
+
+    return onlyd;
+}
+
+var after = function (number, func) {
+    var tally = confirmInteger(number);
+    var fn = confirmFunction(func);
+
+    var afterd = function () {
+        if (tally < 1) {
+            return func.apply(undefined, arguments);
+        }
+
+        tally -= 1;
+    }
+
+    return afterd;
+}
+
+
 // - list factories -
 
 var range = function funcRange(first, last, step) {
@@ -503,36 +537,76 @@ var flatten = function funcFlatten(list) {
 }
 
 
-var only = function funcOnly(number, func) {
+var bigFreeze = function funcBigFreeze(obj) {
     "use strict";
 
-    var times = confirmInteger(number);
-    var fn = confirmFunction(func);
-
-    var tally = 0;
-
-    var onlyd = function () {
-        if (tally < times) {
-            tally += 1;
-            return fn.apply(undefined, arguments);
+    var checkType = function (obj) {
+        if (Array.isArray(obj)) {
+            return true;
         }
+
+        if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
+            return true;
+        }
+
+        return false;
     }
 
-    return onlyd;
+    var freezeRecurse = function (obj) {
+        Object.getOwnPropertyNames(obj).forEach(function (key) {
+            if (checkType(obj[key])) {
+                freezeRecurse(obj[key]);
+            }
+        });
+
+        return Object.freeze(obj);
+    }
+
+    if (checkType(obj)) {
+        freezeRecurse(obj);
+    }
+
+    return obj;
 }
 
 
-var after = function (number, func) {
-  var tally = confirmInteger(number);
-  var fn = confirmFunction(func);
-
-  var afterd = function () {
-    if (tally < 1) {
-      return func.apply(undefined, arguments);
+const bigDup = function funcBigDup(obj) {
+  let checkType = function (obj) {
+    if (Array.isArray(obj)) {
+      return true;
     }
 
-    tally -= 1;
+    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
+      return true;
+    }
+
+    return false;
   }
 
-  return afterd;
+  let duplicateType = function (obj) {
+    if (Array.isArray(obj)) {
+      return Object.assign([], obj);
+    }
+
+    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
+      return Object.assign({}, obj);
+    }
+
+    return obj;
+  }
+
+  let duplicateRecurse = function (obj) {
+    Object.getOwnPropertyNames(obj).forEach(function (key) {
+      if (checkType(obj[key])) {
+        obj[key] = duplicateType(obj[key]);
+        duplicateRecurse(obj[key]);
+      }
+    });
+  }
+
+  if (checkType(obj)) {
+    duplicateRecurse(obj);
+  }
+
+  return obj;
 }
