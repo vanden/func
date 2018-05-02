@@ -1,612 +1,606 @@
-// func.js
+// func_es5.js
 // Brian Taylor Vann
 // April 2018
 // MIT License
 
 
-var confirmArray = function funcConfirmArray(list) {
+var func = (function bigFunc() {
     "use strict";
+    
+    // error handling
 
-    if (Array.isArray(list)) {
-        return list;
+    var confirmArray = function funcConfirmArray(list) {
+        if (Array.isArray(list)) {
+            return list;
+        }
+
+        throw new TypeError("Argument is not of type Array.");
+    };
+
+
+    var confirmInteger = function (integer) {
+      if (Number.isInteger(integer)) {
+        return number;
+      }
+
+      throw new TypeError("Argument is not of type Integer.");
     }
 
-    throw new TypeError("Argument is not of type Array.");
-};
+
+    var confirmFunction = function (func) {
+      if (func instanceof "function") {
+        return func;
+      }
+
+      throw new TypeError("Argument is not of type Function.");
+    }
 
 
-var confirmInteger = function (integer) {
-  if (Number.isInteger(integer)) {
-    return number;
-  }
-
-  throw new TypeError("Argument is not of type Integer.");
-}
+    var isArrayType = function (obj) {
+      return Array.isArray(obj);
+    };
 
 
-var confirmFunction = function (func) {
-  if (func instanceof "function") {
-    return func;
-  }
-
-  throw new TypeError("Argument is not of type Function.");
-}
+    var isObjectType = function (obj) {
+      return (typeof obj === "object"
+        && Object.getPrototypeOf(obj) === Object.prototype);
+    };
 
 
-// - iterators -
+    var isValidDupType = function (obj) {
+      return (isArrayType(obj) || isObjectType(obj));
+    };
 
-var iterator = function funcIterator(arr) {
-    "use strict";
 
-    var list = confirmArray(arr);
-    var index = -1;
-    var complete = (arr.length === 0);
+    var duplicateArray = function (obj) {
+      if (isArrayType(obj)) {
+        retrun Object.assign([], obj);
+      }
 
-    return Object.freeze({
-        done: function () {
-            return complete;
-        },
+      return obj;
+    };
 
-        step: function () {
-            if (index < list.length) {
-                index += 1;
-                complete = (index > list.length - 2);
+    var duplicateObject = function (obj) {
+      if (isObjectType(obj)) {
+        return Object.assign({}, obj);
+      }
 
-                return list[index];
+      return obj;
+    };
+
+
+    // - iterators -
+
+    var iterator = function funcIterator(arr) {
+        var list = confirmArray(arr);
+        var index = -1;
+        var complete = (arr.length === 0);
+
+        return Object.freeze({
+            done: function () {
+                return complete;
+            },
+
+            step: function () {
+                if (index < list.length) {
+                    index += 1;
+                    complete = (index > list.length - 2);
+
+                    return list[index];
+                }
             }
-        }
-    });
-};
+        });
+    };
 
 
-var reverseIterator = function funcReverseIterator(arr) {
-    "use strict";
+    var reverseIterator = function funcReverseIterator(arr) {
+        var list = confirmArray(arr);
+        var index = list.length;
+        var complete = (arr.length === 0);
 
-    var list = confirmArray(arr);
-    var index = list.length;
-    var complete = (arr.length === 0);
+        return Object.freeze({
+            done: function () {
+                return complete;
+              },
 
-    return Object.freeze({
-        done: function () {
-            return complete;
-          },
+              step: function () {
+                  if (index > -1) {
+                    index -= 1;
+                    complete = (index < 1);
 
-          step: function () {
-              if (index > -1) {
-                index -= 1;
-                complete = (index < 1);
-
-                return list[index];
+                    return list[index];
+                  }
               }
-          }
-    });
-};
+        });
+    };
 
 
-var times = function funcTimes(num, func) {
-    "use strict";
+    var times = function funcTimes(num, func) {
+        var freq = Math.max(0, confirmNumber(num));
+        var fn = confirmFunction(func);
 
-    var freq = Math.max(0, confirmNumber(num));
-    var fn = confirmFunction(func);
-
-    while (freq > 0) {
-        fn();
-        freq -= 1;
-    }
-}
-
-
-// - functors -
-
-var each = function funcEach(list, func) {
-    "use strict";
-
-    var listIter = iterator(list);
-    var fn = confirmFunction(func);
-
-    while (!listIter.done()) {
-        fn(listIter.step());
-    }
-};
-
-
-var reverseEach = function funcReverseEach(list, func) {
-    "use strict";
-
-    var listIter = reverseIterator(list);
-    var fn = confirmFunction(func);
-
-    while (!listIter.done()) {
-        fn(listIter.step());
-    }
-}
-
-
-var enumerate = function (list, func, initial) {
-    "use strict";
-
-    var listIter = iterator(list);
-    var fn = confirmFunction(func);
-    var index = 0;
-
-    if(initial) {
-        index = confirmInteger(initial);
-    }
-
-    while (!listIter.done()) {
-        fn(index, listIter.step());
-        index += 1;
-    }
-};
-
-
-var map = function (arr, func) {
-    "use strict";
-
-    var list = confirmArray(arr);
-    var fn = confirmFunction(func);
-
-    var mapList = list.slice();
-
-    enumerate(list, function (index, item) {
-        mapList[index] = func(item);
-    });
-
-    return mapList;
-};
-
-
-var reduce = function (list, func, initial) {
-    "use strict";
-
-    var listIter = iterator(list);
-    var fn = confirmFunction(func);
-    var accumulator = initial;
-
-    if (typeof accumulator === "undefined") {
-        accumulator = listIter.step();
-    }
-
-    while (!listIter.done()) {
-        accumulator = fn(accumulator, listIter.step());
-    }
-
-    return accumulator;
-};
-
-
-var reverseReduce = function (list, func, initial) {
-    "use strict";
-
-    var listIter = reverseIterator(list);
-    var fn = confirmFunction(func);
-    var accumulator = initial;
-
-    if (typeof accumulator === "undefined") {
-        accumulator = listIter.step();
-    }
-
-    while (!listIter.done()) {
-        accumulator = fn(accumulator, listIter.step());
-    }
-
-    return accumulator;
-};
-
-
-var filter = function (list, func) {
-    "use strict";
-
-    var fn = confirmFunction(func);
-    var filtered = [];
-
-    each(list, function (item) {
-        if (fn(item) === true) {
-            filtered.push(item);
-        }
-    });
-
-    return filtered;
-};
-
-
-var reject = function (list, func) {
-    "use strict";
-
-    var fn = confirmFunction(func);
-    var rejected = [];
-
-    each(list, function (item) {
-        if (fn(item) === false) {
-            rejected.push(item);
-        }
-    });
-
-    return rejected;
-};
-
-
-// - qualitators -
-
-var all = function (list, func) {
-    "use strict";
-
-    var listIter = iterator(list);
-    var fn = confirmFunction(func);
-
-    while (!listIter.done()) {
-        if (!(fn(listIter.step()) === true)) {
-            return false;
+        while (freq > 0) {
+            fn();
+            freq -= 1;
         }
     }
 
-    return true;
-};
+
+    // - functors -
+
+    var each = function funcEach(list, func) {
+        var listIter = iterator(list);
+        var fn = confirmFunction(func);
+
+        while (!listIter.done()) {
+            fn(listIter.step());
+        }
+    };
 
 
-var any = function (list, func) {
-    "use strict";
+    var reverseEach = function funcReverseEach(list, func) {
+        var listIter = reverseIterator(list);
+        var fn = confirmFunction(func);
 
-    var listIter = iterator(list);
-    var fn = confirmFunction(func);
-
-    while (!listIter.done()) {
-        if (fn(listIter.step()) === true) {
-            return true;
+        while (!listIter.done()) {
+            fn(listIter.step());
         }
     }
 
-    return false;
-};
 
+    var enumerate = function (list, func, initial) {
+        var listIter = iterator(list);
+        var fn = confirmFunction(func);
+        var index = 0;
 
-var none = function (list, func) {
-    "use strict";
-
-    var listIter = iterator(list);
-    var fn = confirmFunction(func);
-
-    while (!listIter.done()) {
-        if (!!(fn(listIter.step())) === true) {
-            return false;
-        }
-    }
-
-    return true;
-};
-
-
-var count = function (list, func) {
-    "use strict";
-
-    var fn = confirmFunction(func);
-    var tally = 0;
-
-    each(list, function (item) {
-        if (func(item) === true) {
-            tally += 1;
-        }
-    });
-
-    return tally;
-}
-
-
-var max = function (arr, func) {
-    "use strict";
-
-    var list = confirmArray(arr);
-
-    var fn = (func)
-        ? confirmFunction(func)
-        : function (max, curr) { return max < curr; }
-
-    var maxFunc = function(max, curr) {
-        return fn(max, curr)
-            ? curr
-            : max;
-    }
-
-    return reduce(list, maxFunc, list[0]);
-}
-
-
-var min = function (arr, func) {
-    "use strict";
-
-    var list = confirmArray(arr);
-
-    var fn = (func)
-        ? confirmFunction(func)
-        : function (min, curr) { return min > curr; }
-
-    var minFunc = function(min, curr) {
-        return fn(min, curr)
-            ? curr
-            : min;
-    }
-
-    return reduce(list, minFunc, list[0]);
-}
-
-
-// - higher functions -
-
-var partial = function funcPartial() {
-    "use strict";
-
-    var func = confirmFunction(arguments[0]);
-    var boundArgs = Array.from(arguments).slice(1, arguments.length);
-
-    return function () {
-        return func.apply(undefined, boundArgs.concat(Array.from(arguments)));
-    }
-}
-
-
-var curry = function funcCurry(num, func) {
-    "use strict";
-
-    var times = confirmInteger(num);
-    var fn = confirmFunction(func);
-
-    var stock = [];
-
-    var curried = function (item) {
-        stock.push(item);
-        if (stock.length < times) {
-            return curried;
+        if (initial) {
+            index = confirmInteger(initial);
         }
 
-        return fn.apply(undefined, stock);
-    }
+        while (!listIter.done()) {
+            fn(index, listIter.step());
+            index += 1;
+        }
+    };
 
-    return curried;
-}
+
+    var map = function (arr, func) {
+        var list = confirmArray(arr);
+        var fn = confirmFunction(func);
+
+        var mapList = list.slice();
+
+        enumerate(list, function (index, item) {
+            mapList[index] = func(item);
+        });
+
+        return mapList;
+    };
 
 
-var stretchCurry = function funcStretchCurry(num, func) {
-    "use strict";
+    var reduce = function (list, func, initial) {
+        var listIter = iterator(list);
+        var fn = confirmFunction(func);
+        var accumulator = initial;
 
-    var times = confirmInteger(num);
-    var fn = confirmFunction(func);
-
-    var stock = [];
-
-    var curried = function () {
-        stock = stock.concat(Array.from(arguments))
-        if (stock.length < times) {
-            return curried;
+        if (typeof accumulator === "undefined") {
+            accumulator = listIter.step();
         }
 
-        return fn.apply(undefined, stock);
-    }
-
-    return curried;
-}
-
-
-var only = function funcOnly(number, func) {
-    "use strict";
-
-    var times = confirmInteger(number);
-    var fn = confirmFunction(func);
-
-    var tally = 0;
-
-    var onlyd = function () {
-        if (tally < times) {
-            tally += 1;
-            return fn.apply(undefined, arguments);
-        }
-    }
-
-    return onlyd;
-}
-
-var after = function (number, func) {
-    var tally = confirmInteger(number);
-    var fn = confirmFunction(func);
-
-    var afterd = function () {
-        if (tally < 1) {
-            return func.apply(undefined, arguments);
+        while (!listIter.done()) {
+            accumulator = fn(accumulator, listIter.step());
         }
 
-        tally -= 1;
-    }
-
-    return afterd;
-}
+        return accumulator;
+    };
 
 
-// - list factories -
+    var reverseReduce = function (list, func, initial) {
+        var listIter = reverseIterator(list);
+        var fn = confirmFunction(func);
+        var accumulator = initial;
 
-var range = function funcRange(first, last, step) {
-    var createRange = function (first, last, step, fn) {
-        if (step === 0 || first > last && step > 0) {
-            return [];
+        if (typeof accumulator === "undefined") {
+            accumulator = listIter.step();
         }
 
-        var run = [];
-        var curr = first;
-
-        while (fn(curr, last)) {
-            run.push(curr);
-            curr += step;
+        while (!listIter.done()) {
+            accumulator = fn(accumulator, listIter.step());
         }
 
-        return run;
-    }
-
-    var lessThan = function (curr, last) {
-        return curr < last;
-    }
-
-    var greaterThan = function (curr, last) {
-        return curr > last;
-    }
-
-    return createRange(
-        confirmInteger(first),
-        confirmInteger(last),
-        confirmInteger(step),
-        (last < first)
-            ? greaterThan
-            : lessThan
-    );
-}
+        return accumulator;
+    };
 
 
-var shuffle = function funcShuffle(arr) {
-    "use strict";
+    var filter = function (list, func) {
+        var fn = confirmFunction(func);
+        var filtered = [];
 
-    var deck = confirmArray(arr).slice();
-    var index = deck.length - 1;
-    var randomIndex = 0;
-    var tmp;
-
-    while (index > 1) {
-        randomIndex = Math.floor(Math.random() * index);
-
-        tmp = deck[index];
-        deck[index] = deck[randomIndex];
-        deck[randomIndex] = tmp;
-
-        index -= 1;
-    }
-
-    return deck;
-}
-
-
-var sample = function (arr, number) {
-    "use strict";
-
-    var list = confirmArray(arr);
-    var count = confirmInteger(number);
-
-    return shuffle(list).slice(0, count);
-}
-
-
-var const unique = function funcUnique(arr) {
-    "use strict";
-
-    var list = confirmArray(arr);
-    var hashy = {};
-    var uniqueList = [];
-
-    each(list, function (item) {
-        if (hashy[item] === undefined) {
-            hashy[item] = true;
-            uniqueList.push(item);
-        }
-    });
-
-    return uniqueList;
-}
-
-
-var flatten = function funcFlatten(list) {
-    "use strict";
-
-    var flatList = [];
-    var queue = [];
-    var currIter;
-    var item;
-
-    queue.push(iterator(list));
-
-    while (queue.length) {
-        currIter = queue.shift();
-
-        while (!currIter.done()) {
-            item = currIter.step();
-
-            if (Array.isArray(item)) {
-                queue.push(currIter);
-                currIter = iterator(item);
-            } else {
-                flatList.push(item);
-            }
-        }
-    }
-
-    return flatList;
-}
-
-
-var bigFreeze = function funcBigFreeze(obj) {
-    "use strict";
-
-    var checkType = function (obj) {
-        if (Array.isArray(obj)) {
-            return true;
-        }
-
-        if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
-            return true;
-        }
-
-        return false;
-    }
-
-    var freezeRecurse = function (obj) {
-        Object.getOwnPropertyNames(obj).forEach(function (key) {
-            if (checkType(obj[key])) {
-                freezeRecurse(obj[key]);
+        each(list, function (item) {
+            if (fn(item) === true) {
+                filtered.push(item);
             }
         });
 
-        return Object.freeze(obj);
+        return filtered;
+    };
+
+
+    var reject = function (list, func) {
+        var fn = confirmFunction(func);
+        var rejected = [];
+
+        each(list, function (item) {
+            if (fn(item) === false) {
+                rejected.push(item);
+            }
+        });
+
+        return rejected;
+    };
+
+
+    // - qualitators -
+
+    var all = function (list, func) {
+        var listIter = iterator(list);
+        var fn = confirmFunction(func);
+
+        while (!listIter.done()) {
+            if (!(fn(listIter.step()) === true)) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+
+    var any = function (list, func) {
+        var listIter = iterator(list);
+        var fn = confirmFunction(func);
+
+        while (!listIter.done()) {
+            if (fn(listIter.step()) === true) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+
+    var none = function (list, func) {
+        var listIter = iterator(list);
+        var fn = confirmFunction(func);
+
+        while (!listIter.done()) {
+            if (!!(fn(listIter.step())) === true) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+
+    var count = function (list, func) {
+        var fn = confirmFunction(func);
+        var tally = 0;
+
+        each(list, function (item) {
+            if (func(item) === true) {
+                tally += 1;
+            }
+        });
+
+        return tally;
     }
 
-    if (checkType(obj)) {
-        freezeRecurse(obj);
+
+    var max = function (arr, func) {
+        var list = confirmArray(arr);
+
+        var fn = function (max, curr) {
+            return max < curr;
+        }
+
+        if (func) {
+            fn = confirmFunction(func);
+        }
+
+        var maxFunc = function (max, curr) {
+            if (fn(max, curr)) {
+                return curr;
+            }
+
+            return max;
+        }
+
+        return reduce(list, maxFunc, list[0]);
     }
 
-    return obj;
-}
 
+    var min = function (arr, func) {
+        var list = confirmArray(arr);
 
-const bigDup = function funcBigDup(obj) {
-  let checkType = function (obj) {
-    if (Array.isArray(obj)) {
-      return true;
+        var fn = function (min, curr) {
+            return min > curr;
+        }
+
+        if (func) {
+            fn = confirmFunction(func);
+        }
+
+        var minFunc = function (min, curr) {
+            if (fn(min, curr)) {
+                return curr;
+            }
+
+            return max;
+        }
+
+        return reduce(list, minFunc, list[0]);
     }
 
-    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
-      return true;
+
+    // - higher functions -
+
+    var partial = function funcPartial() {
+        var func = confirmFunction(arguments[0]);
+        var boundArgs = Array.from(arguments).slice(1, arguments.length);
+
+        return function () {
+            return func.apply(undefined, boundArgs.concat(Array.from(arguments)));
+        }
     }
 
-    return false;
-  }
 
-  let duplicateType = function (obj) {
-    if (Array.isArray(obj)) {
-      return Object.assign([], obj);
+    var curry = function funcCurry(num, func) {
+        var times = confirmInteger(num);
+        var fn = confirmFunction(func);
+
+        var stock = [];
+
+        var curried = function (item) {
+            stock.push(item);
+            if (stock.length < times) {
+                return curried;
+            }
+
+            return fn.apply(undefined, stock);
+        }
+
+        return curried;
     }
 
-    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
-      return Object.assign({}, obj);
+
+    var stretchCurry = function funcStretchCurry(num, func) {
+        var times = confirmInteger(num);
+        var fn = confirmFunction(func);
+
+        var stock = [];
+
+        var curried = function () {
+            stock = stock.concat(Array.from(arguments))
+            if (stock.length < times) {
+                return curried;
+            }
+
+            return fn.apply(undefined, stock);
+        }
+
+        return curried;
     }
 
-    return obj;
-  }
 
-  let duplicateRecurse = function (obj) {
-    Object.getOwnPropertyNames(obj).forEach(function (key) {
-      if (checkType(obj[key])) {
-        obj[key] = duplicateType(obj[key]);
-        duplicateRecurse(obj[key]);
-      }
-    });
-  }
+    var only = function funcOnly(number, func) {
+        var times = confirmInteger(number);
+        var fn = confirmFunction(func);
 
-  if (checkType(obj)) {
-    duplicateRecurse(obj);
-  }
+        var tally = 0;
 
-  return obj;
-}
+        var onlyd = function () {
+            if (tally < times) {
+                tally += 1;
+                return fn.apply(undefined, arguments);
+            }
+        }
+
+        return onlyd;
+    }
+
+    var after = function (number, func) {
+        var tally = confirmInteger(number);
+        var fn = confirmFunction(func);
+
+        var afterd = function () {
+            if (tally < 1) {
+                return func.apply(undefined, arguments);
+            }
+
+            tally -= 1;
+        }
+
+        return afterd;
+    }
+
+
+    // - list factories -
+
+    var range = function funcRange(first, last, step) {
+        var createRange = function (first, last, step, fn) {
+            if (step === 0 || first > last && step > 0) {
+                return [];
+            }
+
+            var run = [];
+            var curr = first;
+
+            while (fn(curr, last)) {
+                run.push(curr);
+                curr += step;
+            }
+
+            return run;
+        }
+
+        var fn = function (curr, last) {
+            return curr < last;
+        }
+
+        if (last < first) {
+          fn = function (curr, last) {
+            return curr > last;
+          }
+        }
+
+        return createRange(
+            confirmInteger(first),
+            confirmInteger(last),
+            confirmInteger(step),
+            fn
+        );
+    }
+
+
+    var shuffle = function funcShuffle(arr) {
+        var deck = confirmArray(arr).slice();
+        var index = deck.length - 1;
+        var randomIndex = 0;
+        var tmp;
+
+        while (index > 1) {
+            randomIndex = Math.floor(Math.random() * index);
+
+            tmp = deck[index];
+            deck[index] = deck[randomIndex];
+            deck[randomIndex] = tmp;
+
+            index -= 1;
+        }
+
+        return deck;
+    }
+
+
+    var sample = function (arr, number) {
+        var list = confirmArray(arr);
+        var count = confirmInteger(number);
+
+        return shuffle(list).slice(0, count);
+    }
+
+
+    var unique = function funcUnique(arr) {
+        var list = confirmArray(arr);
+        var hashy = {};
+        var uniqueList = [];
+
+        each(list, function (item) {
+            if (hashy[item] === undefined) {
+                hashy[item] = true;
+                uniqueList.push(item);
+            }
+        });
+
+        return uniqueList;
+    }
+
+
+    var flatten = function funcFlatten(list) {
+        var flatList = [];
+        var queue = [];
+        var currIter;
+        var item;
+
+        queue.push(iterator(list));
+
+        while (queue.length) {
+            currIter = queue.shift();
+
+            while (!currIter.done()) {
+                item = currIter.step();
+
+                if (Array.isArray(item)) {
+                    queue.push(currIter);
+                    currIter = iterator(item);
+                } else {
+                    flatList.push(item);
+                }
+            }
+        }
+
+        return flatList;
+    }
+
+
+    var bigFreeze = function funcBigFreeze(obj) {
+        var freezeRecurse = function (obj) {
+            Object.getOwnPropertyNames(obj).forEach(function (key) {
+                if (checkType(obj[key])) {
+                    freezeRecurse(obj[key]);
+                }
+            });
+
+            return Object.freeze(obj);
+        }
+
+        if (checkType(obj)) {
+            freezeRecurse(obj);
+        }
+
+        return obj;
+    }
+
+
+    var bigDup = function funcBigDup(obj) {
+        var duplicateRecurse = function (obj) {
+            Object.getOwnPropertyNames(obj).forEach(function (key) {
+                if (isValidDupType(obj[key])) {
+                    obj[key] = duplicateRecurse(duplicateObject(duplicateArray(obj[key])));
+                }
+            });
+
+            return obj
+        }
+
+        if (checkType(obj)) {
+            duplicateRecurse(obj);
+        }
+
+        return obj;
+    }
+
+    return Object.freeze({
+        "iterator": iterator,
+        "reverseIterator": reverseIterator,
+        "times": times,
+        "each": each,
+        "reverseEach": reverseEach,
+        "enumerate": enumerate,
+        "map": map,
+        "reduce": reduce,
+        "reverseReduce": reverseReduce,
+        "filter": filter,
+        "reject": reject,
+        "all": all,
+        "any": any,
+        "none": none,
+        "count": count,
+        "max": max,
+        "min": min,
+        "partial": partial,
+        "curry": curry,
+        "stretchCurry": stretchCurry,
+        "only": only,
+        "after": after,
+        "range": range,
+        "shuffle": shuffle,
+        "sample": sample,
+        "unique": unique,
+        "flatten": flatten,
+        "bigFreeze": bigFreeze,
+        "bigDup": bigDup
+    }};
+})();

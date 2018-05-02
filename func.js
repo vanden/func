@@ -14,6 +14,7 @@ const confirmArray = (list) => {
   throw new TypeError("Argument is not of type Array.")
 };
 
+
 const confirmInteger = (integer) => {
   if (Number.isInteger(integer)) {
     return integer;
@@ -22,6 +23,7 @@ const confirmInteger = (integer) => {
   throw new TypeError("Argument is not of type Integer.")
 };
 
+
 const confirmFunction = (func) => {
   if (func instanceof Function) {
     return func;
@@ -29,6 +31,31 @@ const confirmFunction = (func) => {
 
   throw new TypeError("Argument is not of type Function.")
 };
+
+
+const isArrayType = (obj) => (Array.isArray(obj));
+
+
+const isObjectType = (obj) => (
+  typeof obj === "object"
+    && Object.getPrototypeOf(obj) === Object.prototype
+);
+
+
+const isValidDupType = (obj) => (isArrayType(obj) || isObjectType(obj));
+
+
+const duplicateArray = (obj) => (
+  (isArrayType(obj))
+    ? Object.assign([], obj)
+    : obj
+);
+
+const duplicateObject = (obj) => (
+  (isObjectType(obj))
+    ? Object.assign({}, obj)
+    : obj
+);
 
 
 // - iterators -
@@ -467,21 +494,9 @@ const flatten = (list) => {
 
 
 const bigFreeze = (obj) => {
-  let checkType = (obj) => {
-    if (Array.isArray(obj)) {
-      return true;
-    }
-
-    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
-      return true;
-    }
-
-    return false;
-  }
-
   let freezeRecurse = (obj) => {
     Object.getOwnPropertyNames(obj).forEach((key) => {
-      if (checkType(obj[key])) {
+      if (isValidDupType(obj[key])) {
         freezeRecurse(obj[key]);
       }
     });
@@ -489,53 +504,26 @@ const bigFreeze = (obj) => {
     return Object.freeze(obj);
   }
 
-  if (checkType(obj)) {
-    freezeRecurse(obj);
-  }
-
-  return obj;
+  return (isValidDupType(obj))
+    ? freezeRecurse(obj)
+    : obj;
 }
 
 
 const bigDup = (obj) => {
-  let checkType = (obj) => {
-    if (Array.isArray(obj)) {
-      return true;
-    }
-
-    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
-      return true;
-    }
-
-    return false;
-  }
-
-  let duplicateType = (obj) => {
-    if (Array.isArray(obj)) {
-      return Object.assign([], obj);
-    }
-
-    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
-      return Object.assign({}, obj);
-    }
-
-    return obj;
-  }
-
   let duplicateRecurse = (obj) => {
     Object.getOwnPropertyNames(obj).forEach((key) => {
-      if (checkType(obj[key])) {
-        obj[key] = duplicateType(obj[key]);
-        duplicateRecurse(obj[key]);
+      if (isValidDupType(obj[key])) {
+        obj[key] = duplicateRecurse(duplicateObject(duplicateArray(obj[key])));
       }
     });
+
+    return obj
   }
 
-  if (checkType(obj)) {
-    duplicateRecurse(obj);
-  }
-
-  return obj;
+  return (isValidDupType(obj))
+    ? duplicateRecurse(obj)
+    : obj;
 }
 
 
