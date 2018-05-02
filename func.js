@@ -34,7 +34,7 @@ const confirmFunction = (func) => {
 // - iterators -
 
 const iterator = (arr) => {
-  let list = confirmArray(arr);
+  confirmArray(arr);
   let index = -1;
   let complete = (arr.length === 0);
 
@@ -44,11 +44,11 @@ const iterator = (arr) => {
     },
 
     step: function () {
-      if (index < list.length) {
+      if (index < arr.length) {
         index += 1;
-        complete = (index > list.length - 2)
+        complete = (index > arr.length - 2)
 
-        return list[index];
+        return arr[index];
       }
     }
   });
@@ -56,8 +56,8 @@ const iterator = (arr) => {
 
 
 const reverseIterator = (arr) => {
-  let list = confirmArray(arr);
-  let index = list.length;
+  confirmArray(arr);
+  let index = arr.length;
   let complete = (arr.length === 0);
 
   return Object.freeze({
@@ -70,7 +70,7 @@ const reverseIterator = (arr) => {
         index -= 1;
         complete = (index < 1);
 
-        return list[index];
+        return arr[index];
       }
     }
   });
@@ -123,12 +123,12 @@ const enumerate = (arr, func, initial = 0) => {
 
 
 const map = (arr, func) => {
-  let list = confirmArray(arr);
-  let fn = confirmFunction(func);
+  confirmArray(arr);
+  confirmFunction(func);
 
-  let mapList = list.slice();
+  let mapList = arr.slice();
 
-  enumerate(list, (index, item) => {
+  enumerate(arr, (index, item) => {
     mapList[index] = func(item);
   });
 
@@ -138,7 +138,7 @@ const map = (arr, func) => {
 
 const reduce = (list, func, initial) => {
   let listIter = iterator(list);
-  let fn = confirmFunction(func);
+  confirmFunction(func);
   let accumulator = initial;
 
   if(accumulator === undefined) {
@@ -146,7 +146,7 @@ const reduce = (list, func, initial) => {
   }
 
   while (!listIter.done()) {
-    accumulator = fn(accumulator, listIter.step());
+    accumulator = func(accumulator, listIter.step());
   }
 
   return accumulator;
@@ -155,7 +155,7 @@ const reduce = (list, func, initial) => {
 
 const reverseReduce = (list, func, initial) => {
   let listIter = reverseIterator(list);
-  let fn = confirmFunction(func);
+  confirmFunction(func);
   let accumulator = initial;
 
   if (accumulator === undefined) {
@@ -163,7 +163,7 @@ const reverseReduce = (list, func, initial) => {
   }
 
   while (!listIter.done()) {
-    accumulator = fn(accumulator, listIter.step());
+    accumulator = func(accumulator, listIter.step());
   }
 
   return accumulator;
@@ -171,11 +171,11 @@ const reverseReduce = (list, func, initial) => {
 
 
 const filter = (list, func) => {
-  let fn = confirmFunction(func);
+  confirmFunction(func);
   let filtered = [];
 
   each(list, (item) => {
-    if (fn(item) === true) {
+    if (func(item) === true) {
       filtered.push(item);
     }
   });
@@ -185,11 +185,11 @@ const filter = (list, func) => {
 
 
 const reject = (list, func) => {
-  let fn = confirmFunction(func);
+  confirmFunction(func);
   let rejected = [];
 
   each(list, (item) => {
-    if (fn(item) === false) {
+    if (func(item) === false) {
       rejected.push(item);
     }
   });
@@ -202,10 +202,10 @@ const reject = (list, func) => {
 
 const all = (list, func) => {
   let listIter = iterator(list);
-  let fn = confirmFunction(func);
+  confirmFunction(func);
 
   while (!listIter.done()) {
-    if (fn(listIter.step()) === false) {
+    if (func(listIter.step()) === false) {
       return false;
     }
   }
@@ -216,10 +216,10 @@ const all = (list, func) => {
 
 const any = (list, func) => {
   let listIter = iterator(list);
-  let fn = confirmFunction(func);
+  confirmFunction(func);
 
   while (!listIter.done()) {
-    if (fn(listIter.step()) === true) {
+    if (func(listIter.step()) === true) {
       return true;
     }
   }
@@ -230,10 +230,10 @@ const any = (list, func) => {
 
 const none = (list, func) => {
   let listIter = iterator(list);
-  let fn = confirmFunction(func);
+  confirmFunction(func);
 
   while (!listIter.done()) {
-    if (fn(listIter.step()) === true) {
+    if (func(listIter.step()) === true) {
       return false;
     }
   }
@@ -243,7 +243,7 @@ const none = (list, func) => {
 
 
 const count = (list, func) => {
-  let fn = confirmFunction(func);
+  confirmFunction(func);
   let tally = 0;
 
   each(list, (item) => {
@@ -257,7 +257,7 @@ const count = (list, func) => {
 
 
 const max = (arr, func) => {
-  let list = confirmArray(arr);
+  confirmArray(arr);
 
   let fn = (func)
     ? confirmFunction(func)
@@ -269,12 +269,12 @@ const max = (arr, func) => {
       : max;
   }
 
-  return reduce(list, maxFunc, list[0]);
+  return reduce(arr, maxFunc, arr[0]);
 }
 
 
 const min = (arr, func) => {
-  let list = confirmArray(arr);
+  confirmArray(arr);
 
   let fn = (func)
     ? confirmFunction(func)
@@ -286,22 +286,22 @@ const min = (arr, func) => {
       : min;
   }
 
-  return reduce(list, minFunc, list[0]);
+  return reduce(arr, minFunc, arr[0]);
 }
 
 
 // - higher functions -
 
 const partial = (func, ...args) => {
-  let fn = confirmFunction(func);
+  confirmFunction(func);
 
-  return (...rest) => (fn(...args, ...rest));
+  return (...rest) => (func(...args, ...rest));
 }
 
 
 const curry = (num, func) => {
   let times = confirmInteger(num);
-  let fn = confirmFunction(func);
+  confirmFunction(func);
 
   let stock = [];
 
@@ -312,7 +312,7 @@ const curry = (num, func) => {
       return curried;
     }
 
-    return fn(...stock);
+    return func(...stock);
   }
 
   return curried;
@@ -321,7 +321,7 @@ const curry = (num, func) => {
 
 const stretchCurry = (num, func) => {
   let times = confirmInteger(num);
-  let fn = confirmFunction(func);
+  confirmFunction(func);
 
   let stock = [];
 
@@ -332,7 +332,7 @@ const stretchCurry = (num, func) => {
       return curried;
     }
 
-    return fn(...stock);
+    return func(...stock);
   }
 
   return curried;
@@ -341,14 +341,14 @@ const stretchCurry = (num, func) => {
 
 const only = (number, func) => {
   let times = confirmInteger(number);
-  let fn = confirmFunction(func);
+  confirmFunction(func);
 
   let tally = 0;
 
   let onlyd = (...rest) => {
     if (tally < times) {
       tally += 1;
-      return fn(...rest);
+      return func(...rest);
     }
   }
 
