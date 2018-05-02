@@ -388,12 +388,16 @@ var stretchCurry = function funcStretchCurry(num, func) {
 
 // - list factories -
 
-var range = function funcRange() {
-    var createRange = function (first, last, step, func) {
+var range = function funcRange(first, last, step) {
+    var createRange = function (first, last, step, fn) {
+        if (step === 0 || first > last && step > 0) {
+            return [];
+        }
+
         var run = [];
         var curr = first;
 
-        while (func(curr, last)) {
+        while (fn(curr, last)) {
             run.push(curr);
             curr += step;
         }
@@ -409,35 +413,14 @@ var range = function funcRange() {
         return curr > last;
     }
 
-    var first = 0;
-    var last = 0;
-    var step = 1;
-    var fn = lessThan;
-
-    if (arguments.length === 1) {
-        last = confirmInteger(arguments[0]);
-    }
-
-    if (arguments.length === 2) {
-        first = confirmInteger(arguments[0]);
-        last = confirmInteger(arguments[1]);
-    }
-
-    if (arguments.length === 3) {
-        first = confirmInteger(arguments[0]);
-        last = confirmInteger(arguments[1]);
-        step = confirmInteger(arguments[2]);
-    }
-
-    if (step === 0 || (first > last && step > 0)) {
-        return [];
-    }
-
-    if (first > last) {
-        fn = greaterThan;
-    }
-
-    return createRange(first, last, step, fn);
+    return createRange(
+        confirmInteger(first),
+        confirmInteger(last),
+        confirmInteger(step),
+        (last < first)
+            ? greaterThan
+            : lessThan
+    );
 }
 
 

@@ -6,7 +6,7 @@
 
 // - error handling -
 
-const confirmArray = function (list) {
+const confirmArray = (list) => {
   if (Array.isArray(list)) {
     return list;
   }
@@ -14,7 +14,7 @@ const confirmArray = function (list) {
   throw new TypeError("Argument is not of type Array.")
 };
 
-const confirmInteger = function (integer) {
+const confirmInteger = (integer) => {
   if (Number.isInteger(integer)) {
     return integer;
   }
@@ -22,7 +22,7 @@ const confirmInteger = function (integer) {
   throw new TypeError("Argument is not of type Integer.")
 };
 
-const confirmFunction = function (func) {
+const confirmFunction = (func) => {
   if (func instanceof Function) {
     return func;
   }
@@ -33,7 +33,7 @@ const confirmFunction = function (func) {
 
 // - iterators -
 
-const iterator = function funcIterator(arr) {
+const iterator = (arr) => {
   let list = confirmArray(arr);
   let index = -1;
   let complete = (arr.length === 0);
@@ -55,7 +55,7 @@ const iterator = function funcIterator(arr) {
 };
 
 
-const reverseIterator = function funcReverseIterator(arr) {
+const reverseIterator = (arr) => {
   let list = confirmArray(arr);
   let index = list.length;
   let complete = (arr.length === 0);
@@ -77,7 +77,7 @@ const reverseIterator = function funcReverseIterator(arr) {
 };
 
 
-const times = function funcTimes(num, func) {
+const times = (num, func) => {
   let freq = Math.max(0, confirmInteger(num));
   let fn = confirmFunction(func);
 
@@ -90,7 +90,7 @@ const times = function funcTimes(num, func) {
 
 // - functors -
 
-const each = function funcEach(arr, func) {
+const each = (arr, func) => {
   let listIter = iterator(arr);
   let fn = confirmFunction(func);
 
@@ -100,7 +100,7 @@ const each = function funcEach(arr, func) {
 };
 
 
-const reverseEach = function funcReverseEach(arr, func) {
+const reverseEach = (arr, func) => {
   let listIter = reverseIterator(arr);
   let fn = confirmFunction(func);
 
@@ -110,14 +110,10 @@ const reverseEach = function funcReverseEach(arr, func) {
 }
 
 
-const enumerate = function funcEnumerate(arr, func, initial) {
+const enumerate = (arr, func, initial = 0) => {
   let listIter = iterator(arr);
   let fn = confirmFunction(func);
-  let index = 0;
-
-  if(initial) {
-    index = confirmInteger(initial);
-  }
+  let index = confirmInteger(initial);
 
   while (!listIter.done()) {
     fn(index, listIter.step());
@@ -126,13 +122,13 @@ const enumerate = function funcEnumerate(arr, func, initial) {
 };
 
 
-const map = function funcMap(arr, func) {
+const map = (arr, func) => {
   let list = confirmArray(arr);
   let fn = confirmFunction(func);
 
   let mapList = list.slice();
 
-  enumerate(list, function (index, item) {
+  enumerate(list, (index, item) => {
     mapList[index] = func(item);
   });
 
@@ -140,12 +136,12 @@ const map = function funcMap(arr, func) {
 };
 
 
-const reduce = function funcReduce(list, func, initial) {
+const reduce = (list, func, initial) => {
   let listIter = iterator(list);
   let fn = confirmFunction(func);
   let accumulator = initial;
 
-  if(typeof accumulator === "undefined") {
+  if(accumulator === undefined) {
     accumulator = listIter.step();
   }
 
@@ -157,12 +153,12 @@ const reduce = function funcReduce(list, func, initial) {
 };
 
 
-const reverseReduce = function funcReverseReduce(list, func, initial) {
+const reverseReduce = (list, func, initial) => {
   let listIter = reverseIterator(list);
   let fn = confirmFunction(func);
   let accumulator = initial;
 
-  if (typeof accumulator === "undefined") {
+  if (accumulator === undefined) {
     accumulator = listIter.step();
   }
 
@@ -174,11 +170,11 @@ const reverseReduce = function funcReverseReduce(list, func, initial) {
 };
 
 
-const filter = function funcFilter(list, func) {
+const filter = (list, func) => {
   let fn = confirmFunction(func);
   let filtered = [];
 
-  each(list, function (item) {
+  each(list, (item) => {
     if (fn(item) === true) {
       filtered.push(item);
     }
@@ -188,11 +184,11 @@ const filter = function funcFilter(list, func) {
 };
 
 
-const reject = function funcReject(list, func) {
+const reject = (list, func) => {
   let fn = confirmFunction(func);
   let rejected = [];
 
-  each(list, function (item) {
+  each(list, (item) => {
     if (fn(item) === false) {
       rejected.push(item);
     }
@@ -204,7 +200,7 @@ const reject = function funcReject(list, func) {
 
 // - qualitators -
 
-const all = function funcAll(list, func) {
+const all = (list, func) => {
   let listIter = iterator(list);
   let fn = confirmFunction(func);
 
@@ -218,7 +214,7 @@ const all = function funcAll(list, func) {
 };
 
 
-const any = function funcAny(list, func) {
+const any = (list, func) => {
   let listIter = iterator(list);
   let fn = confirmFunction(func);
 
@@ -232,7 +228,7 @@ const any = function funcAny(list, func) {
 };
 
 
-const none = function funcNone(list, func) {
+const none = (list, func) => {
   let listIter = iterator(list);
   let fn = confirmFunction(func);
 
@@ -246,11 +242,11 @@ const none = function funcNone(list, func) {
 };
 
 
-const count = function funcCount(list, func) {
+const count = (list, func) => {
   let fn = confirmFunction(func);
   let tally = 0;
 
-  each(list, function (item) {
+  each(list, (item) => {
     if (func(item) === true) {
       tally += 1;
     }
@@ -260,12 +256,12 @@ const count = function funcCount(list, func) {
 }
 
 
-const max = function (arr, func) {
+const max = (arr, func) => {
   let list = confirmArray(arr);
 
   let fn = (func)
     ? confirmFunction(func)
-    : function (max, curr) { return max < curr; }
+    : (max, curr) => (max < curr);
 
   let maxFunc = function(max, curr) {
     return fn(max, curr)
@@ -277,12 +273,12 @@ const max = function (arr, func) {
 }
 
 
-const min = function (arr, func) {
+const min = (arr, func) => {
   let list = confirmArray(arr);
 
   let fn = (func)
     ? confirmFunction(func)
-    : function (min, curr) { return min > curr; }
+    : (min, curr) => (min > curr);
 
   let minFunc = function(min, curr) {
     return fn(min, curr)
@@ -296,66 +292,63 @@ const min = function (arr, func) {
 
 // - higher functions -
 
-const partial = function funcPartial() {
-  let func = confirmFunction(arguments[0]);
-  let boundArgs = Array.from(arguments).slice(1, arguments.length);
+const partial = (func, ...args) => {
+  let fn = confirmFunction(func);
 
-  return function () {
-    return func.apply(undefined, boundArgs.concat(Array.from(arguments)));
-  }
+  return (...rest) => (fn(...args, ...rest));
 }
 
 
-const curry = function funcCurry(num, func) {
+const curry = (num, func) => {
   let times = confirmInteger(num);
   let fn = confirmFunction(func);
 
   let stock = [];
 
-  let curried = function (item) {
+  let curried = (item) => {
     stock.push(item);
 
     if (stock.length < times) {
       return curried;
     }
 
-    return fn.apply(undefined, stock);
+    return fn(...stock);
   }
 
   return curried;
 }
 
 
-const stretchCurry = function funcStretchCurry(num, func) {
+const stretchCurry = (num, func) => {
   let times = confirmInteger(num);
   let fn = confirmFunction(func);
 
   let stock = [];
 
-  let curried = function () {
-    stock = stock.concat(Array.from(arguments));
+  let curried = (...rest) => {
+    stock = [...stock, ...rest];
 
     if (stock.length < times) {
       return curried;
     }
 
-    return fn.apply(undefined, stock);
+    return fn(...stock);
   }
 
   return curried;
 }
 
 
-const only = function (number, func) {
+const only = (number, func) => {
   let times = confirmInteger(number);
   let fn = confirmFunction(func);
 
   let tally = 0;
 
-  let onlyd = function () {
+  let onlyd = (...rest) => {
     if (tally < times) {
       tally += 1;
-      return fn.apply(undefined, arguments);
+      return fn(...rest);
     }
   }
 
@@ -363,13 +356,13 @@ const only = function (number, func) {
 }
 
 
-const after = function (number, func) {
+const after = (number, func) => {
   let tally = confirmInteger(number);
   let fn = confirmFunction(func);
 
-  let afterd = function () {
+  let afterd = (...rest) => {
     if (tally < 1) {
-      return func.apply(undefined, arguments);
+      return fn(...rest);
     }
 
     tally -= 1;
@@ -381,8 +374,12 @@ const after = function (number, func) {
 
 // - list factories -
 
-const range = function funcRange() {
-  let createRange = function (first, last, step, func) {
+const range = (first, last, step) => {
+  let createRange = (first, last, step, func) => {
+    if (step === 0 || (first > last && step > 0)) {
+      return [];
+    }
+
     let run = [];
     let curr = first;
 
@@ -394,57 +391,25 @@ const range = function funcRange() {
     return run;
   }
 
-  let lessThan = function (curr, last) {
-    return curr < last;
-  }
+  let lessThan = (curr, last) => (curr < last);
+  let greaterThan = (curr, last) => (curr > last);
 
-  let greaterThan = function (curr, last) {
-    return curr > last;
-  }
-
-  let first = 0;
-  let last = 0;
-  let step = 1;
-  let fn = lessThan;
-
-  if (arguments.length === 1) {
-    last = confirmInteger(arguments[0]);
-  }
-
-  if (arguments.length === 2) {
-    first = confirmInteger(arguments[0]);
-    last = confirmInteger(arguments[1]);
-  }
-
-  if (arguments.length === 3) {
-    first = confirmInteger(arguments[0]);
-    last = confirmInteger(arguments[1]);
-    step = confirmInteger(arguments[2]);
-  }
-
-  if (step === 0 || (first > last && step > 0)) {
-    return [];
-  }
-
-  if (first > last) {
-    fn = greaterThan;
-  }
-
-  return createRange(first, last, step, fn);
+  return createRange(
+    confirmInteger(first),
+    confirmInteger(last),
+    confirmInteger(step),
+    (last < first) ? greaterThan : lessThan
+  );
 }
 
 
-const shuffle = function funcShuffle(arr) {
+const shuffle = (arr) => {
   let deck = confirmArray(arr).slice();
   let index = deck.length - 1;
 
   while (index > 1) {
     let randomIndex = Math.floor(Math.random() * index);
-
-    let tmp = deck[index];
-    deck[index] = deck[randomIndex];
-    deck[randomIndex] = tmp;
-
+    [deck[index], deck[randomIndex]] = [deck[randomIndex], deck[index]]
     index -= 1;
   }
 
@@ -452,7 +417,7 @@ const shuffle = function funcShuffle(arr) {
 }
 
 
-const sample = function funcSample(arr, number) {
+const sample = (arr, number) => {
   let list = confirmArray(arr);
   let count = confirmInteger(number);
 
@@ -460,12 +425,12 @@ const sample = function funcSample(arr, number) {
 }
 
 
-const unique = function funcUnique(arr) {
+const unique = (arr) => {
   let list = confirmArray(arr);
   let hashy = {};
   let uniqueList = [];
 
-  each(list, function (item) {
+  each(list, (item) => {
     if (hashy[item] === undefined) {
       hashy[item] = true;
       uniqueList.push(item);
@@ -476,7 +441,7 @@ const unique = function funcUnique(arr) {
 }
 
 
-const flatten = function funcFlatten(list) {
+const flatten = (list) => {
   let flatList = [];
   let queue = [];
 
@@ -501,31 +466,31 @@ const flatten = function funcFlatten(list) {
 }
 
 
-var freeze = function (obj) {
-  if (Array.isArray(obj)) {
-    obj.forEach(function (value) {
-      if (typeof value === "object") {
-        freeze(value);
-      }
-    });
-    Object.freeze(obj);
-  } else if (typeof obj === "object") {
-    Object.keys(obj).forEach(function (key) {
-      if (typeof obj[key] === "object") {
-        freeze(obj[key]);
-      }
-    });
-    Object.freeze(obj);
-  }
-}
+// var freeze = function (obj) {
+//   if (Array.isArray(obj)) {
+//     obj.forEach(function (value) {
+//       if (typeof value === "object") {
+//         freeze(value);
+//       }
+//     });
+//     Object.freeze(obj);
+//   } else if (typeof obj === "object") {
+//     Object.keys(obj).forEach(function (key) {
+//       if (typeof obj[key] === "object") {
+//         freeze(obj[key]);
+//       }
+//     });
+//     Object.freeze(obj);
+//   }
+// }
 
 
 // ridiculous
 
-var print = function () {
-  console.log.apply(undefined, arguments);
-  return arguments;
-}
+// var print = function (args) {
+//   console.log.apply(undefined, arguments);
+//   return arguments;
+// }
 
 
 
@@ -556,5 +521,6 @@ export {
   shuffle,
   sample,
   unique,
-  flatten
+  flatten,
+  print
 }
