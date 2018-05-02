@@ -4,6 +4,7 @@
   "description": "Func provides less-cumbersome expected or missing helper functions.",
   "main": "func.js",
   "devDependencies": {
+    "babel-core": "^6.26.3",
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
     "chai": "^4.1.2",
@@ -11,7 +12,7 @@
   },
   "scripts": {
     "test": "mocha tests/*.js --require babel-register || exit 0",
-    "test-single": "mocha tests/test_flatten.js --require babel-register || exit 0"
+    "test-single": "mocha tests/test_print.js --require babel-register || exit 0"
   },
   "repository": {
     "type": "git",
