@@ -466,33 +466,81 @@ const flatten = (list) => {
 }
 
 
-// var freeze = function (obj) {
-//   if (Array.isArray(obj)) {
-//     obj.forEach(function (value) {
-//       if (typeof value === "object") {
-//         freeze(value);
-//       }
-//     });
-//     Object.freeze(obj);
-//   } else if (typeof obj === "object") {
-//     Object.keys(obj).forEach(function (key) {
-//       if (typeof obj[key] === "object") {
-//         freeze(obj[key]);
-//       }
-//     });
-//     Object.freeze(obj);
-//   }
-// }
+const bigFreeze = (obj) => {
+  let checkType = (obj) => {
+    if (Array.isArray(obj)) {
+      return true;
+    }
+
+    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
+      return true;
+    }
+
+    return false;
+  }
+
+  let freezeRecurse = (obj) => {
+    Object.getOwnPropertyNames(obj).forEach((key) => {
+      if (checkType(obj[key])) {
+        freezeRecurse(obj[key]);
+      }
+    });
+
+    return Object.freeze(obj);
+  }
+
+  if (checkType(obj)) {
+    freezeRecurse(obj);
+  }
+
+  return obj;
+}
 
 
-// ridiculous
+const bigDup = (obj) => {
+  let checkType = (obj) => {
+    if (Array.isArray(obj)) {
+      return true;
+    }
 
-// var print = function (args) {
-//   console.log.apply(undefined, arguments);
-//   return arguments;
-// }
+    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
+      return true;
+    }
+
+    return false;
+  }
+
+  let duplicateType = (obj) => {
+    if (Array.isArray(obj)) {
+      return Object.assign([], obj);
+    }
+
+    if (typeof obj === "object" && Object.getPrototypeOf(obj) === Object.prototype) {
+      return Object.assign({}, obj);
+    }
+
+    return obj;
+  }
+
+  let duplicateRecurse = (obj) => {
+    Object.getOwnPropertyNames(obj).forEach((key) => {
+      if (checkType(obj[key])) {
+        obj[key] = duplicateType(obj[key]);
+        duplicateRecurse(obj[key]);
+      }
+    });
+  }
+
+  if (checkType(obj)) {
+    duplicateRecurse(obj);
+  }
+
+  return obj;
+}
 
 
+
+// Export Modules
 
 export {
   iterator,
@@ -522,5 +570,6 @@ export {
   sample,
   unique,
   flatten,
-  print
+  bigFreeze,
+  bigDup
 }
