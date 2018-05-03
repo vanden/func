@@ -60,10 +60,9 @@ const duplicateObject = (obj) => (
 
 // - iterators -
 
-const iterator = (arr) => {
-  confirmArray(arr);
+const iterator = (list) => {
   let index = -1;
-  let complete = (arr.length === 0);
+  let complete = (confirmArray(list).length === 0);
 
   return Object.freeze({
     done: function () {
@@ -71,21 +70,20 @@ const iterator = (arr) => {
     },
 
     step: function () {
-      if (index < arr.length) {
+      if (index < list.length) {
         index += 1;
-        complete = (index > arr.length - 2)
+        complete = (index > list.length - 2)
 
-        return arr[index];
+        return list[index];
       }
     }
   });
 };
 
 
-const reverseIterator = (arr) => {
-  confirmArray(arr);
-  let index = arr.length;
-  let complete = (arr.length === 0);
+const reverseIterator = (list) => {
+  let index = confirmArray(list).length;
+  let complete = (list.length === 0);
 
   return Object.freeze({
     done: function () {
@@ -97,7 +95,7 @@ const reverseIterator = (arr) => {
         index -= 1;
         complete = (index < 1);
 
-        return arr[index];
+        return list[index];
       }
     }
   });
@@ -105,11 +103,12 @@ const reverseIterator = (arr) => {
 
 
 const times = (num, func) => {
+  confirmFunction(func);
+
   let freq = Math.max(0, confirmInteger(num));
-  let fn = confirmFunction(func);
 
   while (freq > 0) {
-    fn();
+    func();
     freq -= 1;
   }
 }
@@ -117,45 +116,47 @@ const times = (num, func) => {
 
 // - functors -
 
-const each = (arr, func) => {
-  let listIter = iterator(arr);
-  let fn = confirmFunction(func);
+const each = (list, func) => {
+  confirmFunction(func);
+
+  let listIter = iterator(list);
 
   while (!listIter.done()) {
-    fn(listIter.step());
+    func(listIter.step());
   }
 };
 
 
-const reverseEach = (arr, func) => {
-  let listIter = reverseIterator(arr);
-  let fn = confirmFunction(func);
+const reverseEach = (list, func) => {
+  confirmFunction(func);
+
+  let listIter = reverseIterator(list);
 
   while (!listIter.done()) {
-    fn(listIter.step());
+    func(listIter.step());
   }
 }
 
 
-const enumerate = (arr, func, initial = 0) => {
-  let listIter = iterator(arr);
-  let fn = confirmFunction(func);
-  let index = confirmInteger(initial);
+const enumerate = (list, func, index = 0) => {
+  confirmFunction(func);
+  confirmInteger(index)
+
+  let listIter = iterator(list);
 
   while (!listIter.done()) {
-    fn(index, listIter.step());
+    func(index, listIter.step());
     index += 1;
   }
 };
 
 
-const map = (arr, func) => {
-  confirmArray(arr);
+const map = (list, func) => {
   confirmFunction(func);
 
-  let mapList = arr.slice();
+  let mapList = confirmArray(list).slice();
 
-  enumerate(arr, (index, item) => {
+  enumerate(list, (index, item) => {
     mapList[index] = func(item);
   });
 
@@ -164,13 +165,12 @@ const map = (arr, func) => {
 
 
 const reduce = (list, func, initial) => {
-  let listIter = iterator(list);
   confirmFunction(func);
-  let accumulator = initial;
 
-  if(accumulator === undefined) {
-    accumulator = listIter.step();
-  }
+  let listIter = iterator(list);
+  let accumulator = (initial === undefined)
+    ? listIter.step()
+    : initial;
 
   while (!listIter.done()) {
     accumulator = func(accumulator, listIter.step());
@@ -181,13 +181,12 @@ const reduce = (list, func, initial) => {
 
 
 const reverseReduce = (list, func, initial) => {
-  let listIter = reverseIterator(list);
   confirmFunction(func);
-  let accumulator = initial;
 
-  if (accumulator === undefined) {
-    accumulator = listIter.step();
-  }
+  let listIter = reverseIterator(list);
+  let accumulator = (initial === undefined)
+    ? listIter.step()
+    : initial;
 
   while (!listIter.done()) {
     accumulator = func(accumulator, listIter.step());
@@ -199,6 +198,7 @@ const reverseReduce = (list, func, initial) => {
 
 const filter = (list, func) => {
   confirmFunction(func);
+
   let filtered = [];
 
   each(list, (item) => {
@@ -213,6 +213,7 @@ const filter = (list, func) => {
 
 const reject = (list, func) => {
   confirmFunction(func);
+
   let rejected = [];
 
   each(list, (item) => {
@@ -228,8 +229,9 @@ const reject = (list, func) => {
 // - qualitators -
 
 const all = (list, func) => {
-  let listIter = iterator(list);
   confirmFunction(func);
+
+  let listIter = iterator(list);
 
   while (!listIter.done()) {
     if (func(listIter.step()) === false) {
@@ -242,8 +244,9 @@ const all = (list, func) => {
 
 
 const any = (list, func) => {
-  let listIter = iterator(list);
   confirmFunction(func);
+
+  let listIter = iterator(list);
 
   while (!listIter.done()) {
     if (func(listIter.step()) === true) {
@@ -256,8 +259,9 @@ const any = (list, func) => {
 
 
 const none = (list, func) => {
-  let listIter = iterator(list);
   confirmFunction(func);
+
+  let listIter = iterator(list);
 
   while (!listIter.done()) {
     if (func(listIter.step()) === true) {
@@ -271,6 +275,7 @@ const none = (list, func) => {
 
 const count = (list, func) => {
   confirmFunction(func);
+
   let tally = 0;
 
   each(list, (item) => {
@@ -283,9 +288,7 @@ const count = (list, func) => {
 }
 
 
-const max = (arr, func) => {
-  confirmArray(arr);
-
+const max = (list, func) => {
   let fn = (func)
     ? confirmFunction(func)
     : (max, curr) => (max < curr);
@@ -296,13 +299,11 @@ const max = (arr, func) => {
       : max;
   }
 
-  return reduce(arr, maxFunc, arr[0]);
+  return reduce(confirmArray(list), maxFunc, list[0]);
 }
 
 
-const min = (arr, func) => {
-  confirmArray(arr);
-
+const min = (list, func) => {
   let fn = (func)
     ? confirmFunction(func)
     : (min, curr) => (min > curr);
@@ -313,7 +314,7 @@ const min = (arr, func) => {
       : min;
   }
 
-  return reduce(arr, minFunc, arr[0]);
+  return reduce(confirmArray(list), minFunc, list[0]);
 }
 
 
@@ -326,8 +327,8 @@ const partial = (func, ...args) => {
 }
 
 
-const curry = (num, func) => {
-  let times = confirmInteger(num);
+const curry = (count, func) => {
+  confirmInteger(count);
   confirmFunction(func);
 
   let stock = [];
@@ -335,7 +336,7 @@ const curry = (num, func) => {
   let curried = (item) => {
     stock.push(item);
 
-    if (stock.length < times) {
+    if (stock.length < count) {
       return curried;
     }
 
@@ -346,8 +347,8 @@ const curry = (num, func) => {
 }
 
 
-const stretchCurry = (num, func) => {
-  let times = confirmInteger(num);
+const stretchCurry = (count, func) => {
+  confirmInteger(count);
   confirmFunction(func);
 
   let stock = [];
@@ -355,7 +356,7 @@ const stretchCurry = (num, func) => {
   let curried = (...rest) => {
     stock = [...stock, ...rest];
 
-    if (stock.length < times) {
+    if (stock.length < count) {
       return curried;
     }
 
@@ -366,15 +367,13 @@ const stretchCurry = (num, func) => {
 }
 
 
-const only = (number, func) => {
-  let times = confirmInteger(number);
+const only = (tally, func) => {
+  confirmInteger(tally);
   confirmFunction(func);
 
-  let tally = 0;
-
   let onlyd = (...rest) => {
-    if (tally < times) {
-      tally += 1;
+    if (tally > 0) {
+      tally -= 1;
       return func(...rest);
     }
   }
@@ -383,13 +382,13 @@ const only = (number, func) => {
 }
 
 
-const after = (number, func) => {
-  let tally = confirmInteger(number);
-  let fn = confirmFunction(func);
+const after = (tally, func) => {
+  confirmInteger(tally);
+  confirmFunction(func);
 
   let afterd = (...rest) => {
     if (tally < 1) {
-      return fn(...rest);
+      return func(...rest);
     }
 
     tally -= 1;
@@ -425,13 +424,15 @@ const range = (first, last, step) => {
     confirmInteger(first),
     confirmInteger(last),
     confirmInteger(step),
-    (last < first) ? greaterThan : lessThan
+    (last < first)
+      ? greaterThan
+      : lessThan
   );
 }
 
 
-const shuffle = (arr) => {
-  let deck = confirmArray(arr).slice();
+const shuffle = (list) => {
+  let deck = confirmArray(list).slice();
   let index = deck.length - 1;
 
   while (index > 1) {
@@ -444,20 +445,16 @@ const shuffle = (arr) => {
 }
 
 
-const sample = (arr, number) => {
-  let list = confirmArray(arr);
-  let count = confirmInteger(number);
-
-  return shuffle(list).slice(0, count);
+const sample = (list, count) => {
+  return shuffle(confirmArray(list)).slice(0, confirmInteger(count));
 }
 
 
-const unique = (arr) => {
-  let list = confirmArray(arr);
+const unique = (list) => {
   let hashy = {};
   let uniqueList = [];
 
-  each(list, (item) => {
+  each(confirmArray(list), (item) => {
     if (hashy[item] === undefined) {
       hashy[item] = true;
       uniqueList.push(item);
