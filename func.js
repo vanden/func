@@ -138,11 +138,11 @@ const reverseEach = (list, func) => {
 }
 
 
-const enumerate = (list, func, initial = 0) => {
+const enumerate = (list, func, index = 0) => {
   confirmFunction(func);
+  confirmInteger(index)
 
   let listIter = iterator(list);
-  let index = confirmInteger(initial);
 
   while (!listIter.done()) {
     func(index, listIter.step());
