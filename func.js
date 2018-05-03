@@ -425,7 +425,9 @@ const range = (first, last, step) => {
     confirmInteger(first),
     confirmInteger(last),
     confirmInteger(step),
-    (last < first) ? greaterThan : lessThan
+    (last < first)
+      ? greaterThan
+      : lessThan
   );
 }
 
