@@ -61,9 +61,8 @@ const duplicateObject = (obj) => (
 // - iterators -
 
 const iterator = (list) => {
-  confirmArray(list);
   let index = -1;
-  let complete = (list.length === 0);
+  let complete = (confirmArray(list).length === 0);
 
   return Object.freeze({
     done: function () {
@@ -83,8 +82,7 @@ const iterator = (list) => {
 
 
 const reverseIterator = (list) => {
-  confirmArray(list);
-  let index = list.length;
+  let index = confirmArray(list).length;
   let complete = (list.length === 0);
 
   return Object.freeze({
@@ -106,6 +104,7 @@ const reverseIterator = (list) => {
 
 const times = (num, func) => {
   confirmFunction(func);
+
   let freq = Math.max(0, confirmInteger(num));
 
   while (freq > 0) {
@@ -141,9 +140,9 @@ const reverseEach = (list, func) => {
 
 const enumerate = (list, func, initial = 0) => {
   confirmFunction(func);
-  confirmInteger(initial);
 
   let listIter = iterator(list);
+  let index = confirmInteger(initial);
 
   while (!listIter.done()) {
     func(index, listIter.step());
@@ -153,10 +152,9 @@ const enumerate = (list, func, initial = 0) => {
 
 
 const map = (list, func) => {
-  confirmArray(list);
   confirmFunction(func);
 
-  let mapList = list.slice();
+  let mapList = confirmArray(list).slice();
 
   enumerate(list, (index, item) => {
     mapList[index] = func(item);
@@ -170,11 +168,9 @@ const reduce = (list, func, initial) => {
   confirmFunction(func);
 
   let listIter = iterator(list);
-  let accumulator = initial;
-
-  if(accumulator === undefined) {
-    accumulator = listIter.step();
-  }
+  let accumulator = (initial === undefined)
+    ? listIter.step()
+    : initial;
 
   while (!listIter.done()) {
     accumulator = func(accumulator, listIter.step());
@@ -188,11 +184,9 @@ const reverseReduce = (list, func, initial) => {
   confirmFunction(func);
 
   let listIter = reverseIterator(list);
-  let accumulator = initial;
-
-  if (accumulator === undefined) {
-    accumulator = listIter.step();
-  }
+  let accumulator = (initial === undefined)
+    ? listIter.step()
+    : initial;
 
   while (!listIter.done()) {
     accumulator = func(accumulator, listIter.step());
@@ -295,8 +289,6 @@ const count = (list, func) => {
 
 
 const max = (list, func) => {
-  confirmArray(list);
-
   let fn = (func)
     ? confirmFunction(func)
     : (max, curr) => (max < curr);
@@ -307,13 +299,11 @@ const max = (list, func) => {
       : max;
   }
 
-  return reduce(list, maxFunc, list[0]);
+  return reduce(confirmArray(list), maxFunc, list[0]);
 }
 
 
 const min = (list, func) => {
-  confirmArray(list);
-
   let fn = (func)
     ? confirmFunction(func)
     : (min, curr) => (min > curr);
@@ -324,7 +314,7 @@ const min = (list, func) => {
       : min;
   }
 
-  return reduce(list, minFunc, list[0]);
+  return reduce(confirmArray(list), minFunc, list[0]);
 }
 
 
@@ -377,15 +367,13 @@ const stretchCurry = (count, func) => {
 }
 
 
-const only = (number, func) => {
-  let times = confirmInteger(number);
+const only = (tally, func) => {
+  confirmInteger(tally);
   confirmFunction(func);
 
-  let tally = 0;
-
   let onlyd = (...rest) => {
-    if (tally < times) {
-      tally += 1;
+    if (tally > 0) {
+      tally -= 1;
       return func(...rest);
     }
   }
@@ -457,22 +445,16 @@ const shuffle = (list) => {
 }
 
 
-const sample = (list, number) => {
-  confirmArray(list);
-
-  let count = confirmInteger(number);
-
-  return shuffle(list).slice(0, count);
+const sample = (list, count) => {
+  return shuffle(confirmArray(list)).slice(0, confirmInteger(count));
 }
 
 
 const unique = (list) => {
-  confirmArray(list);
-
   let hashy = {};
   let uniqueList = [];
 
-  each(list, (item) => {
+  each(confirmArray(list), (item) => {
     if (hashy[item] === undefined) {
       hashy[item] = true;
       uniqueList.push(item);
