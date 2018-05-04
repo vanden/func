@@ -400,7 +400,7 @@ const after = (tally, func) => {
 
 // - list factories -
 
-const range = (first, last, step) => {
+const range = (first, last, step=1) => {
   let createRange = (first, last, step, func) => {
     if (step === 0 || (first > last && step > 0)) {
       return [];
