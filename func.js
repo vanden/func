@@ -259,17 +259,7 @@ const any = (list, func) => {
 
 
 const none = (list, func) => {
-  confirmFunction(func);
-
-  let listIter = iterator(list);
-
-  while (!listIter.done()) {
-    if (func(listIter.step()) === true) {
-      return false;
-    }
-  }
-
-  return true;
+  return !any(list, func);
 };
 
 
